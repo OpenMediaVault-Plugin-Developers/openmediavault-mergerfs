@@ -1,0 +1,38 @@
+{%- set poolmount = salt['omv_conf.get']('conf.system.filesystem.mountpoint', pool.mntentref) %}
+{%- set mntDir = poolmount.dir %}
+{%- set options = [] %}
+{%- set _ = options.append('category.create=' ~ pool.createpolicy) %}
+{%- set _ = options.append('minfreespace=' ~ pool.minfreespace | string ~ pool.minfreespaceunit) %}
+{%- set _ = options.append('fsname=' ~ pool.name ~ ':' ~ pool.uuid) %}
+{%- for option in pool.options.split(',') %}
+{%- set _ = options.append(option) %}
+{%- endfor %}
+{%- set branches = [] %}
+{%- set reqMnts = [] %}
+{%- set branchDirs = pool.paths.split('\n') %}
+{%- for dir in branchDirs %}
+{%- if dir | length > 2 %}
+{%- set _ = branches.append(dir) %}
+{%- if '*' in dir %}
+{%- set parent = salt['cmd.shell']('findmnt --first-only --noheadings --output TARGET --target ' ~ dir) %}
+{%- if parent | length > 1 %}
+{%- set _ = reqMnts.append(parent) %}
+{%- endif %}
+{%- else %}
+{%- set _ = reqMnts.append(dir) %}
+{%- endif %}
+{%- endif %}
+{%- endfor -%}
+[Unit]
+Description = MergerFS mount for {{ pool.name }}
+After=local-fs.target network.target network-online.target network-fs.target zfs-mount.target
+RequiresMountsFor={{ reqMnts | join(' ') }}
+
+[Mount]
+What = {{ branches | join(':') }}
+Where = {{ mntDir }}
+Type = fuse.mergerfs
+Options = {{ options | join(',') }}
+
+[Install]
+WantedBy=multi-user.target

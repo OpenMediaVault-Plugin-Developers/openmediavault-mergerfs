@@ -1,0 +1,42 @@
+version: "1.0"
+type: component
+data:
+  name: omv-storage-mergerfs-datatable-page
+  type: datatablePage
+  config:
+    autoReload: false
+    hasSearchField: true
+    stateId: 1c3bcc38-d47d-11eb-a52f-27b38ade6d17
+    sorters:
+      - dir: asc
+        prop: name
+    store:
+      proxy:
+        service: Mergerfs
+        get:
+          method: getList
+    columns:
+      - name: _("Name")
+        prop: name
+        sortable: true
+        flexGrow: 1
+      - name: _("Paths")
+        prop: pathsa
+        flexGrow: 5
+    actions:
+      - template: create
+        execute:
+          type: url
+          url: "/storage/mergerfs/create"
+      - template: edit
+        execute:
+          type: url
+          url: "/storage/mergerfs/edit/{{ _selected[0].uuid }}"
+      - template: delete
+        execute:
+          type: request
+          request:
+            service: Mergerfs
+            method: delete
+            params:
+              uuid: "{{ _selected[0].uuid }}"

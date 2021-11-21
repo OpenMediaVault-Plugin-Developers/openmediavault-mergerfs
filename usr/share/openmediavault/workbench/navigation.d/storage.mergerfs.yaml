@@ -1,0 +1,7 @@
+version: "1.0"
+type: navigation-item
+data:
+  path: "storage.mergerfs"
+  text: _("mergerfs")
+  icon: "mdi:view-stream-outline"
+  url: "/storage/mergerfs"

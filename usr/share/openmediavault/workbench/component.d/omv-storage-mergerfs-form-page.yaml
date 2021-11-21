@@ -1,0 +1,108 @@
+version: "1.0"
+type: component
+data:
+  name: omv-storage-mergerfs-form-page
+  type: formPage
+  config:
+    request:
+      service: Mergerfs
+      get:
+        method: get
+        params:
+          uuid: "{{ _routeParams.uuid }}"
+      post:
+        method: set
+    fields:
+      - type: confObjUuid
+      - type: hidden
+        name: mntentref
+        value: "{{ newconfobjuuid }}"
+      - type: checkbox
+        name: enable
+        label: _("Enable")
+        value: true
+      - type: textInput
+        name: name
+        label: _("Name")
+        value: ""
+        modifiers:
+          type: disabled
+          constraint:
+            operator: ne
+            arg0:
+              prop: mntentref
+            arg1: "{{ newconfobjuuid }}"
+      - type: select
+        name: sharedfolderrefs
+        label: _("Shared folders")
+        multiple: true
+        valueField: uuid
+        textField: description
+        store:
+          proxy:
+            service: ShareMgmt
+            get:
+              method: enumerateSharedFolders
+      - type: textarea
+        name: paths
+        label: _("Paths")
+        hint: _("Put each folder on a new line.")
+      - type: select
+        name: createpolicy
+        label: _("Create policy")
+        value: "epmfs"
+        store:
+          data:
+            - ['epall', _('Existing path - all')]
+            - ['epff', _('Existing path - first found')]
+            - ['eplfs', _('Existing path - least free space')]
+            - ['eplus', _('Existing path - least used space')]
+            - ['epmfs', _('Existing path - most free space')]
+            - ['eppfrd', _('Existing path - percentage free random distribution')]
+            - ['eprand', _('Existing path - random')]
+            - ['erofs', _('Read-only')]
+            - ['ff', _('First found')]
+            - ['lfs', _('Least free space')]
+            - ['lus', _('Least used space')]
+            - ['mfs', _('Most free space')]
+            - ['msplfs', _('Most shared path - least free space')]
+            - ['msplus', _('Most shared path - least used space')]
+            - ['mspmfs', _('Most shared path - most free space')]
+            - ['msppfrd', _('Most shared path - percentage free random distribution')]
+            - ['newest', _('Newest file')]
+            - ['pfrd', _('Percentage free random distribution')]
+            - ['rand', _('Random')]
+      - type: container
+        fields:
+          - type: numberInput
+            name: minfreespace
+            label: _("Minimum free space")
+            value: 4
+            hint: _("When the minimum free space is reached on a filesystem it will not be written to unless all the other filesystem also has reached the limit.")
+            validators:
+              min: 0
+              max: 99999
+              patternType: integer
+              required: true
+          - type: select
+            name: minfreespaceunit
+            label: _("Unit")
+            value: "G"
+            store:
+              data:
+                - ['K', _('Kilobytes')]
+                - ['M', _('Megabytes')]
+                - ['G', _('Gigabytes')]
+      - type: textInput
+        name: options
+        label: _("Options")
+        value: "defaults,allow_other,cache.files=off,use_ino"
+    buttons:
+      - template: submit
+        execute:
+          type: url
+          url: "/storage/mergerfs"
+      - template: cancel
+        execute:
+          type: url
+          url: "/storage/mergerfs"

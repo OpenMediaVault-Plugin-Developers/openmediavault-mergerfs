@@ -1,0 +1,49 @@
+{
+	"type": "config",
+	"title": "mergerfs pool",
+	"id": "conf.service.mergerfs.pool",
+	"queryinfo": {
+		"xpath": "/config/services/mergerfs/pools/pool",
+		"iterable": true,
+		"idproperty": "uuid"
+	},
+	"properties": {
+		"uuid": {
+			"type": "string",
+			"format": "uuidv4"
+		},
+		"enable": {
+			"type": "boolean"
+		},
+		"name": {
+			"type": "string",
+			"minLength": 1
+		},
+		"mntentref": {
+			"type": "string"
+		},
+		"paths": {
+			"type": "string"
+		},
+		"createpolicy": {
+			"type": "string",
+			"enum": [
+				"all", "epall", "epff", "eplfs", "eplus",
+				"epmfs", "eppfrd", "eprand", "erofs", "ff",
+				"lfs", "lus", "mfs", "msplfs", "msplus",
+				"mspmfs", "msppfrd", "newest", "pfrd", "rand"
+			]
+		},
+		"minfreespace": {
+			"type": "integer"
+		},
+		"minfreespaceunit": {
+			"type": "string",
+			"enum": ["K", "M", "G"]
+		},
+		"options": {
+			"type": "string"
+		}
+	}
+}
+

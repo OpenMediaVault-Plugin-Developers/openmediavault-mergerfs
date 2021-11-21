@@ -1,0 +1,6 @@
+version: "1.0"
+type: route
+data:
+  url: "/storage/mergerfs"
+  title: _("mergerfs")
+  component: omv-storage-mergerfs-datatable-page
