@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2014-2020 OpenMediaVault Plugin Developers.
+ * Copyright (C) 2014-2021 OpenMediaVault Plugin Developers.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,17 +64,8 @@ class Mergerfs extends UnionAbstract
             $uuid = self::extractUuidFromMountPoint($mountPoint);
         }
 
-        try {
-            $object = $this->database->get($this->dataModelPath, $uuid);
-            $mountPointObject = $this->database->get($this->mountPointDataModelPath, $object->get('self_mntentref'));
-        } catch (Exception $e) {
-        }
-
-        try {
-            $object = $this->database->get($this->dataModelPath2, $uuid);
-            $mountPointObject = $this->database->get($this->mountPointDataModelPath, $object->get('mntentref'));
-        } catch (Exception $e) {
-        }
+        $object = $this->database->get($this->dataModelPath, $uuid);
+        $mountPointObject = $this->database->get($this->mountPointDataModelPath, $object->get('mntentref'));
 
         return new Union($object->get('uuid'), $mountPointObject->get('dir'), $object->get('name'), $this);
     }
@@ -90,7 +81,17 @@ class Mergerfs extends UnionAbstract
      */
     public static function extractUuidFromMountPoint($mountPoint)
     {
-        $uuid = end(explode(DIRECTORY_SEPARATOR, $mountPoint));
+        $mountsFile = '/proc/mounts';
+
+        foreach (new SplFileObject($mountsFile) as $content) {
+            $splitContent = preg_split('/\s+/', $content);
+
+            if ($mountPoint === $splitContent[1]) {
+                $fsname = explode('/:/', $content);
+                $uuid = explode(':', $splitContent[0])[1];
+                break;
+            }
+        }
 
         if (!is_uuid($uuid)) {
             throw new Exception(sprintf(
@@ -121,6 +122,9 @@ class Mergerfs extends UnionAbstract
 
             if ($fsname === $splitContent[0] && $type === $splitContent[2]) {
                 return $splitContent[1];
+            }
+            if ($type === $splitContent[2]) {
+                return $fsname;
             }
         }
 

@@ -32,8 +32,7 @@ abstract class UnionAbstract extends BackendAbstract
     /**
      * @var string
      */
-    protected $dataModelPath = 'conf.service.unionfilesystems.filesystem';
-    protected $dataModelPath2 = 'conf.service.mergerfsfolders.folder';
+    protected $dataModelPath = 'conf.service.mergerfs.pool';
 
     public function __construct(Database $database)
     {
@@ -49,7 +48,6 @@ abstract class UnionAbstract extends BackendAbstract
     {
         $filesystems = [];
         $objects = [];
-        $objects2 = [];
 
         try {
             $objects = $this->database->get($this->dataModelPath);
@@ -57,22 +55,6 @@ abstract class UnionAbstract extends BackendAbstract
             $objects = [];
         }
         foreach ($objects as $object) {
-            $filesystem = $this->getImpl($object->get('uuid'));
-
-            $filesystems[$filesystem->getDeviceFile()] = [
-                'devicefile' => $filesystem->getDeviceFile(),
-                'uuid' => $filesystem->getUuid(),
-                'label' => $filesystem->getLabel(),
-                'type' => $filesystem->getType(),
-            ];
-        }
-
-        try {
-            $objects2 = $this->database->get($this->dataModelPath2);
-        } catch (Exception $e) {
-            $objects2 = [];
-        }
-        foreach ($objects2 as $object) {
             $filesystem = $this->getImpl($object->get('uuid'));
 
             $filesystems[$filesystem->getDeviceFile()] = [
