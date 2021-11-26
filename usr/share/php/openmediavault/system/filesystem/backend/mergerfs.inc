@@ -87,7 +87,6 @@ class Mergerfs extends UnionAbstract
             $splitContent = preg_split('/\s+/', $content);
 
             if ($mountPoint === $splitContent[1]) {
-                $fsname = explode('/:/', $content);
                 $uuid = explode(':', $splitContent[0])[1];
                 break;
             }
