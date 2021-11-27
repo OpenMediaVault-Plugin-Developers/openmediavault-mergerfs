@@ -1,5 +1,7 @@
 openmediavault-mergerfs (6.0) stable; urgency=low
 
-  * Update for OMV 6.x
+  * Initial release for OMV 6.x
+  * Replaces openmediavault-unionfilesystem and will import config
+  * Replaces openmediavault-mergerfsfolders and will import config
 
  -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Wed, 23 Jun 2021 13:14:07 -0500

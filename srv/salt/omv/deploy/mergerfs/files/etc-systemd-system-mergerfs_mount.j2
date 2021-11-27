@@ -9,7 +9,7 @@
 {%- endfor %}
 {%- set branches = [] %}
 {%- set reqMnts = [] %}
-{%- set branchDirs = pool.paths.split('\n') %}
+{%- set branchDirs = pool.paths.split(':') %}
 {%- for dir in branchDirs %}
 {%- if dir | length > 2 %}
 {%- set _ = branches.append(dir) %}

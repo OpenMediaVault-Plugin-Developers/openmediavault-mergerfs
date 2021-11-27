@@ -48,7 +48,8 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         // Add additional pool informations.
         $objectsAssoc = [];
         foreach ($objects as $objectk => &$objectv) {
-            $objectv->add("pathsa", "string", str_replace(PHP_EOL, '<br />', $objectv->get("paths")));
+            $paths = str_replace([',',':', PHP_EOL], '<br />', $objectv->get("paths"));
+            $objectv->add("pathsa", "string", $paths);
             $objectsAssoc[] = $objectv->getAssoc();
         }
         // Filter the result.
@@ -64,7 +65,10 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         $this->validateMethodParams($params, "rpc.common.objectuuid");
         // Get the configuration object.
         $db = \OMV\Config\Database::getInstance();
-        return $db->getAssoc("conf.service.mergerfs.pool", $params['uuid']);
+        $object = $db->get("conf.service.mergerfs.pool", $params['uuid']);
+        $paths = str_replace(':', PHP_EOL, $object->get("paths"));
+        $object->set("paths", $paths);
+        return $object->getAssoc();
     }
 
     public function set($params, $context)
@@ -73,7 +77,8 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         $this->validateMethodContext($context, ["role" => OMV_ROLE_ADMINISTRATOR]);
         // Validate the parameters of the RPC service method.
         //$this->validateMethodParams($params, "rpc.mergerfs.set");
-        $paths = explode(PHP_EOL, $params['paths']);
+        $ppaths = str_replace([',',':'], PHP_EOL, $params['paths']);
+        $paths = explode(PHP_EOL, $ppaths);
         foreach ($params['sharedfolderrefs'] as $uuid) {
             if (is_uuid($uuid)) {
                 $sfpath = \OMV\Rpc\Rpc::call("ShareMgmt", "getPath", ["uuid" => $uuid], $context);
@@ -90,7 +95,7 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         }
         $pathsu = array_unique($paths);
         sort($pathsu);
-        $params['paths'] = implode(PHP_EOL, $pathsu);
+        $params['paths'] = implode(':', $pathsu);
         // Prepare the configuration object.
         $object = new \OMV\Config\ConfigObject("conf.service.mergerfs.pool");
         $object->setAssoc($params);
