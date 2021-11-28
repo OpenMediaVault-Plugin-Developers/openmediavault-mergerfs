@@ -126,8 +126,8 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
             $db->set($object);
         }
         // mark mergerfs dirty
-        $moduleMngr = \OMV\Engine\Module\Manager::getInstance();
-        $moduleMngr->setModuleDirty("mergerfs");
+        // $moduleMngr = \OMV\Engine\Module\Manager::getInstance();
+        // $moduleMngr->setModuleDirty("mergerfs");
         // Return the configuration object.
         return $object->getAssoc();
     }
@@ -146,10 +146,6 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         // Delete the filesystem
         \OMV\Rpc\Rpc::call("FsTab", "delete", [
             "uuid" => $object->get("mntentref")
-        ], $context);
-        \OMV\Rpc\Rpc::call("Config", "applyChanges", [
-            "modules" => [ "mergerfs" ],
-            "force" => TRUE
         ], $context);
         // Return the deleted configuration object.
         return $object->getAssoc();
