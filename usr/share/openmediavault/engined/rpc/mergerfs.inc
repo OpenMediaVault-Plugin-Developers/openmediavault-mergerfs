@@ -125,9 +125,6 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
             $object->set('mntentref', $result['uuid']);
             $db->set($object);
         }
-        // mark mergerfs dirty
-        // $moduleMngr = \OMV\Engine\Module\Manager::getInstance();
-        // $moduleMngr->setModuleDirty("mergerfs");
         // Return the configuration object.
         return $object->getAssoc();
     }
