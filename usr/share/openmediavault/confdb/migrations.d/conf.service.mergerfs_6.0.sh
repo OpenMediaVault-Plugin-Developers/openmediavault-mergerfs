@@ -4,6 +4,7 @@ declare -i count=0
 declare -i count2=0
 declare -i index=0
 declare -i index2=0
+declare -i import=0
 
 . /usr/share/openmediavault/scripts/helper-functions
 
@@ -43,6 +44,7 @@ if omv_config_exists "/config/services/mergerfsfolders"; then
     index=$(( index + 1 ))
   done
   omv_config_delete "/config/services/mergerfsfolders"
+  import=1
 fi
 
 
@@ -89,12 +91,15 @@ if omv_config_exists "/config/services/unionfilesystems"; then
     index=$(( index + 1 ))
   done
   omv_config_delete "/config/services/unionfilesystems"
+  import=1
 fi
 
-# re-write fstab to remove mergerfs pools
-omv-salt deploy run fstab
+if [ ${import} -eq 1 ]; then
+  # re-write fstab to remove mergerfs pools
+  omv-salt deploy run fstab
 
-# create new mount files from imported pools
-omv-salt deploy run mergerfs
+  # create new mount files from imported pools
+  omv-salt deploy run mergerfs
+fi
 
 exit 0
