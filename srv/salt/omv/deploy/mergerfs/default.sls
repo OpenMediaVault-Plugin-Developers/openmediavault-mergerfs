@@ -56,20 +56,20 @@ configure_mergerfs_{{ poolname }}:
     - group: root
     - mode: "0644"
 
+systemd-reload_{{ poolname }}:
+  cmd.run:
+    - name: systemctl daemon-reload
+
 enable_{{ poolname }}_mergerfs:
   service.enabled:
     - name: {{ unitname }}
     - enable: True
 
 restart_{{ poolname }}_mergerfs:
-  module.run:
-    - service.restart:
-      - name: {{ unitname }}
+  cmd.run:
+    - name: systemctl restart {{ unitname }}
 
 {% endif %}
 {% endif %}
 {% endfor %}
 
-systemd-reload:
-  cmd.run:
-    - name: systemctl daemon-reload

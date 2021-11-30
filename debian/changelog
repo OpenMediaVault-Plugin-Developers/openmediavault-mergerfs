@@ -1,3 +1,9 @@
+openmediavault-mergerfs (6.0.3) stable; urgency=low
+
+  * Improve mounting
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Mon, 29 Nov 2021 18:53:54 -0600
+
 openmediavault-mergerfs (6.0.2) stable; urgency=low
 
   * Make sure pool directory exists.
