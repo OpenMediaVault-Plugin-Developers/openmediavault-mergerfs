@@ -96,6 +96,9 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         $pathsu = array_unique($paths);
         sort($pathsu);
         $params['paths'] = implode(':', $pathsu);
+        if (strlen($params['paths']) > 256) {
+            throw new \OMV\Exception(gettext("Total length of all paths is longer than the systemd limit of 256 characters."));
+        }
         // Prepare the configuration object.
         $object = new \OMV\Config\ConfigObject("conf.service.mergerfs.pool");
         $object->setAssoc($params);
