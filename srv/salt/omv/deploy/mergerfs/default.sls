@@ -17,6 +17,7 @@
 
 {% set config = salt['omv_conf.get']('conf.service.mergerfs') %}
 {% set mountsdir = '/etc/systemd/system' %}
+{% set symlinksdir = mountsdir ~ '/multi-user.target.wants' %}
 {% set mountdir = salt['pillar.get']('default:OMV_MOUNT_DIR', '/srv') %}
 {% set pooldir = mountdir ~ '/mergerfs' %}
 {% set pooldiresc = salt['cmd.run']('systemd-escape --path ' ~ pooldir) %}
@@ -25,6 +26,13 @@ configure_pool_dir:
   file.directory:
     - name: "{{ pooldir }}"
     - makedirs: True
+
+remove_mergerfs_mount_symlinks:
+  module.run:
+    - file.find:
+      - path: "{{ symlinksdir }}"
+      - iname: "{{ pooldiresc }}-*.mount"
+      - delete: "l"
 
 remove_mergerfs_mount_files:
   module.run:
