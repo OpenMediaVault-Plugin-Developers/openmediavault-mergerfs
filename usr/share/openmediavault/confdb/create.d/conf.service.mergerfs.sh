@@ -102,7 +102,7 @@ if omv_config_exists "/config/services/unionfilesystems"; then
 fi
 
 if [ ${import} -eq 1 ]; then
-  # re-write fstab to remove mergerfs pools
+  # re-write fstab
   omv-salt deploy run fstab
 
   # create new mount files from imported pools

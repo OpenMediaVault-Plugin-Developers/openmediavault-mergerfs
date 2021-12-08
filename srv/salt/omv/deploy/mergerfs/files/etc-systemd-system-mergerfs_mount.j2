@@ -1,4 +1,6 @@
 {%- set poolmount = salt['omv_conf.get']('conf.system.filesystem.mountpoint', pool.mntentref) %}
+{%- set mountdir = salt['pillar.get']('default:OMV_MOUNT_DIR', '/srv') %}
+{%- set shortdir = mountdir ~ '/mfs' %}
 {%- set mntDir = poolmount.dir %}
 {%- set options = [] %}
 {%- set _ = options.append('category.create=' ~ pool.createpolicy) %}
@@ -12,8 +14,15 @@
 {%- set branchDirs = pool.paths.split(':') %}
 {%- for dir in branchDirs %}
 {%- if dir | length > 2 %}
-{%- set _ = branches.append(dir) %}
 {%- set parent = salt['cmd.shell']('omv-findmnt "' ~ dir ~ '" | sort -u') %}
+{%- if '*' not in dir %}
+{%- set sym = salt['cmd.shell']('crc32 <(echo "' ~ dir ~ '")') %}
+{%- set symdir = shortdir ~ '/' ~ sym %}
+{%- set _ = salt['cmd.shell']('ln -s ' ~ dir ~ ' ' ~ symdir) %}
+{%- set _ = branches.append(symdir) %}
+{%- else %}
+{%- set _ = branches.append(dir) %}
+{%- endif %}
 {%- if parent | length > 1 %}
 {%- set _ = reqMnts.append(parent) %}
 {%- endif %}

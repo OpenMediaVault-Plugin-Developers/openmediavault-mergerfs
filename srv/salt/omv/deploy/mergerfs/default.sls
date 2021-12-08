@@ -21,28 +21,35 @@
 {% set mountdir = salt['pillar.get']('default:OMV_MOUNT_DIR', '/srv') %}
 {% set pooldir = mountdir ~ '/mergerfs' %}
 {% set pooldiresc = salt['cmd.run']('systemd-escape --path ' ~ pooldir) %}
+{% set shortdir = mountdir ~ '/mfs' %}
 
 configure_pool_dir:
   file.directory:
     - name: "{{ pooldir }}"
     - makedirs: True
 
-remove_mergerfs_mount_symlinks:
+configure_short_dir:
+  file.directory:
+    - name: "{{ shortdir }}"
+    - makedirs: True
+    - clean: True
+
+remove_mergerfs_mount_symlinks_{{ symlinksdir }}:
   module.run:
     - file.find:
       - path: "{{ symlinksdir }}"
       - iname: "{{ pooldiresc }}-*.mount"
       - delete: "l"
 
-remove_mergerfs_mount_files:
+remove_mergerfs_mount_files_{{ mountsdir }}:
   module.run:
     - file.find:
       - path: "{{ mountsdir }}"
       - iname: "{{ pooldiresc }}-*.mount"
       - delete: "f"
 
-{% for pool in config.pools.pool %}
-{% if pool.enable | to_bool %}
+{% for pool in config.pools.pool | selectattr('enable') %}
+{% if pool.paths | length <= 256 %}
 {% if pool.mntentref | length == 36 %}
 
 {% set poolmount = salt['omv_conf.get']('conf.system.filesystem.mountpoint', pool.mntentref) -%}
