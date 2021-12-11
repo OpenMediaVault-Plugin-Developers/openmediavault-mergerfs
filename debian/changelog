@@ -1,3 +1,9 @@
+openmediavault-mergerfs (6.0.8) stable; urgency=low
+
+  * Create symlink for each branch to shorten path
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Fri, 10 Dec 2021 07:32:28 -0600
+
 openmediavault-mergerfs (6.0.7) stable; urgency=low
 
   * Improve RequiresMountsFor calculation

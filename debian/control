@@ -8,7 +8,8 @@ XB-Plugin-Section: filesystems
 
 Package: openmediavault-mergerfs
 Architecture: all
-Depends: mergerfs,
+Depends: libarchive-zip-perl,
+         mergerfs,
          openmediavault (>= 6),
          ${misc:Depends}
 Replaces: omvextras-unionbackend,
