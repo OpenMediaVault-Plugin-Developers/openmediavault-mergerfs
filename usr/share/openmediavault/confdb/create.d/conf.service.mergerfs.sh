@@ -39,6 +39,7 @@ if omv_config_exists "/config/services/mergerfsfolders"; then
     if ! omv_config_exists "/config/services/mergerfs/pools/pool[uuid='${uuid}']"; then
       object="<uuid>${uuid}</uuid>"
       object="${object}<enable>1</enable>"
+      object="${object}<fstab>1</fstab>"
       object="${object}<name>${name}</name>"
       object="${object}<mntentref>${mntentref}</mntentref>"
       object="${object}<paths>${paths2}</paths>"
@@ -86,6 +87,7 @@ if omv_config_exists "/config/services/unionfilesystems"; then
     if ! omv_config_exists "/config/services/mergerfs/pools/pool[uuid='${uuid}']"; then
       object="<uuid>${uuid}</uuid>"
       object="${object}<enable>1</enable>"
+      object="${object}<fstab>1</fstab>"
       object="${object}<name>${name}</name>"
       object="${object}<mntentref>${mntentref}</mntentref>"
       object="${object}<paths>${paths}</paths>"

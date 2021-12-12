@@ -94,7 +94,6 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
             }
         }
         $pathsu = array_unique($paths);
-        sort($pathsu);
         $params['paths'] = implode(':', $pathsu);
         // Prepare the configuration object.
         $object = new \OMV\Config\ConfigObject("conf.service.mergerfs.pool");

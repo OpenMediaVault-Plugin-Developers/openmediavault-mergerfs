@@ -12,6 +12,9 @@
 			"enable": {
 				"type": "boolean"
 			},
+			"fstab": {
+				"type": "boolean"
+			},
 			"name": {
 				"type": "string",
 				"required": true

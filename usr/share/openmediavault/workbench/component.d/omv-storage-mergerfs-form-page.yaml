@@ -93,6 +93,11 @@ data:
                 - ['K', _('Kilobytes')]
                 - ['M', _('Megabytes')]
                 - ['G', _('Gigabytes')]
+      - type: checkbox
+        name: fstab
+        label: _("fstab")
+        value: false
+        hint: _("Typically used when more than 10 to 15 branches are needed.<br/>fstab mounts may need a reboot if modified.")
       - type: textInput
         name: options
         label: _("Options")

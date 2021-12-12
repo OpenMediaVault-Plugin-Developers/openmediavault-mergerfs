@@ -48,8 +48,7 @@ remove_mergerfs_mount_files_{{ mountsdir }}:
       - iname: "{{ pooldiresc }}-*.mount"
       - delete: "f"
 
-{% for pool in config.pools.pool | selectattr('enable') %}
-{% if pool.paths | length <= 256 %}
+{% for pool in config.pools.pool | selectattr('enable') | rejectattr('fstab') %}
 {% if pool.mntentref | length == 36 %}
 
 {% set poolmount = salt['omv_conf.get']('conf.system.filesystem.mountpoint', pool.mntentref) -%}
@@ -84,7 +83,6 @@ restart_{{ poolname }}_mergerfs:
   cmd.run:
     - name: systemctl restart {{ unitname }}
 
-{% endif %}
 {% endif %}
 {% endfor %}
 

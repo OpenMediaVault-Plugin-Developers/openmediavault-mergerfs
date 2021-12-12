@@ -27,12 +27,18 @@ class OMVModuleMergerfs extends \OMV\Engine\Module\ServiceAbstract
         return "mergerfs";
     }
 
+    final public function onChange($type, $path, $object, $oldObject)
+    {
+        $this->setDirty();
+        $this->setDirtyByName("fstab");
+    }
+
     public function bindListeners(\OMV\Engine\Notify\Dispatcher $dispatcher)
     {
         $dispatcher->addListener(
             OMV_NOTIFY_CREATE | OMV_NOTIFY_MODIFY | OMV_NOTIFY_DELETE,
             "org.openmediavault.conf.service.mergerfs.pool",
-            [ $this, "setDirty" ]
+            [ $this, "onChange" ]
         );
     }
 }

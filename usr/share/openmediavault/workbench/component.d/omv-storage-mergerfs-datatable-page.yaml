@@ -16,6 +16,10 @@ data:
         get:
           method: getList
     columns:
+      - name: _("Enabled")
+        prop: enable
+        flexGrow: 1
+        cellTemplateName: checkIcon
       - name: _("Name")
         prop: name
         sortable: true
@@ -23,6 +27,10 @@ data:
       - name: _("Paths")
         prop: pathsa
         flexGrow: 5
+      - name: _("fstab")
+        prop: fstab
+        flexGrow: 1
+        cellTemplateName: checkIcon
     actions:
       - template: create
         execute:
