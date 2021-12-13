@@ -27,7 +27,7 @@ class OMVModuleMergerfs extends \OMV\Engine\Module\ServiceAbstract
         return "mergerfs";
     }
 
-    final public function onChange($type, $path, $object, $oldObject)
+    final public function onChange($type, $path, $object)
     {
         $this->setDirty();
         $this->setDirtyByName("fstab");
