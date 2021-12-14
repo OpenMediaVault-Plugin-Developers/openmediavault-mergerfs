@@ -1,8 +1,8 @@
-openmediavault-mergerfs (6.0.11) UNRELEASED; urgency=medium
+openmediavault-mergerfs (6.0.11) stable; urgency=low
 
   * Remove sylinks in favor of branches= in options
 
- -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Tue, 14 Dec 2021 09:24:23 -0600
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Tue, 14 Dec 2021 10:40:04 -0600
 
 openmediavault-mergerfs (6.0.10) stable; urgency=low
 
