@@ -30,7 +30,7 @@
 {%- endfor -%}
 [Unit]
 Description = MergerFS mount for {{ pool.name }}
-After=local-fs.target network.target network-online.target network-fs.target zfs-mount.target
+After=network-fs.target zfs-mount.target
 RequiresMountsFor={{ reqMnts | join(' ') }}
 
 [Mount]
