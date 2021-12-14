@@ -2,10 +2,11 @@
 {%- set mountdir = salt['pillar.get']('default:OMV_MOUNT_DIR', '/srv') %}
 {%- set shortdir = mountdir ~ '/mfs' %}
 {%- set mntDir = poolmount.dir %}
+{%- set fsname = pool.name ~ ':' ~ pool.uuid %}
 {%- set options = [] %}
 {%- set _ = options.append('category.create=' ~ pool.createpolicy) %}
 {%- set _ = options.append('minfreespace=' ~ pool.minfreespace | string ~ pool.minfreespaceunit) %}
-{%- set _ = options.append('fsname=' ~ pool.name ~ ':' ~ pool.uuid) %}
+{%- set _ = options.append('fsname=' ~ fsname) %}
 {%- for option in pool.options.split(',') %}
 {%- set _ = options.append(option) %}
 {%- endfor %}
@@ -15,29 +16,23 @@
 {%- for dir in branchDirs %}
 {%- if dir | length > 2 %}
 {%- set parent = salt['cmd.shell']('omv-findmnt "' ~ dir ~ '" | sort -u') %}
-{%- if '*' not in dir %}
-{%- set sym = salt['cmd.shell']('crc32 <(echo "' ~ dir ~ '")') %}
-{%- set symdir = shortdir ~ '/' ~ sym %}
-{%- set _ = salt['cmd.shell']('ln -s ' ~ dir ~ ' ' ~ symdir) %}
-{%- set _ = branches.append(symdir) %}
-{%- else %}
 {%- set _ = branches.append(dir) %}
-{%- endif %}
 {%- if parent | length > 1 %}
 {%- set _ = reqMnts.append(parent) %}
 {%- endif %}
 {%- endif %}
 {%- endfor -%}
+{%- set optline = 'branches=' ~ branches | join(':') ~ ',' ~ options | join(',') %}
 [Unit]
 Description = MergerFS mount for {{ pool.name }}
 After=network-fs.target zfs-mount.target
 RequiresMountsFor={{ reqMnts | join(' ') }}
 
 [Mount]
-What = {{ branches | join(':') }}
+What = {{ fsname }}
 Where = {{ mntDir }}
 Type = fuse.mergerfs
-Options = {{ options | join(',') }}
+Options = {{ optline }}
 
 [Install]
 WantedBy=multi-user.target

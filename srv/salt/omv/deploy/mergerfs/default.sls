@@ -28,19 +28,6 @@ configure_pool_dir:
     - name: "{{ pooldir }}"
     - makedirs: True
 
-configure_short_dir:
-  file.directory:
-    - name: "{{ shortdir }}"
-    - makedirs: True
-    - clean: True
-
-remove_mergerfs_mount_symlinks_{{ symlinksdir }}:
-  module.run:
-    - file.find:
-      - path: "{{ symlinksdir }}"
-      - iname: "{{ pooldiresc }}-*.mount"
-      - delete: "l"
-
 remove_mergerfs_mount_files_{{ mountsdir }}:
   module.run:
     - file.find:
@@ -85,4 +72,3 @@ restart_{{ poolname }}_mergerfs:
 
 {% endif %}
 {% endfor %}
-
