@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # shellcheck disable=
 #
@@ -8,26 +8,31 @@
 # License version 2. This program is licensed "as is" without any
 # warranty of any kind, whether express or implied.
 #
+
+export LANG=C.UTF-8
+
 mnts=""
 
-for dir in ${1}; do
-  if [ "${dir}" = ".." ] || [ "${dir}" = "." ]; then
-    continue
-  fi
-  if [ "$(basename "${dir}")" = "lost+found" ]; then
-    continue
-  fi
-  if [ -d "${dir}" ]; then
-    mnt="$(findmnt --first-only --noheadings --output TARGET --target "${dir}")"
-    if [ -z "${mnt}" ] || [ "${mnt}" = "/" ]; then
+if [ -n "${1}" ]; then
+  for dir in ${1}; do
+    if [ "${dir}" = ".." ] || [ "${dir}" = "." ]; then
       continue
     fi
-    if [ -z "${mnts}" ]; then
-      mnts="${mnt}"
-    else
-      mnts="${mnts} ${mnt}"
+    if [ "$(basename "${dir}")" = "lost+found" ]; then
+      continue
     fi
-  fi
-done
+    if [ -d "${dir}" ]; then
+      mnt="$(findmnt --first-only --noheadings --output TARGET --target "${dir}")"
+      if [ -z "${mnt}" ] || [ "${mnt}" = "/" ]; then
+        continue
+      fi
+      if [ -z "${mnts}" ]; then
+        mnts="${mnt}"
+      else
+        mnts="${mnts} ${mnt}"
+      fi
+    fi
+  done
+fi
 
 echo "${mnts}"
