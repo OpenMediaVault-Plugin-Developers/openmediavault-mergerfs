@@ -81,17 +81,19 @@ class Mergerfs extends UnionAbstract
      */
     public static function extractUuidFromMountPoint($mountPoint)
     {
-        $mountsFile = '/proc/mounts';
+        $regex = '/[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}/';
+        $mountsFile = strpos($fsname, DIRECTORY_SEPARATOR) === 0 ? '/etc/fstab' : '/proc/mounts';
 
         foreach (new SplFileObject($mountsFile) as $content) {
             $splitContent = preg_split('/\s+/', $content);
-
-            if ($mountPoint === $splitContent[1]) {
-                $uuid = explode(':', $splitContent[0])[1];
-                break;
+            if (in_array($mountPoint, $splitContent)) {
+                preg_match($regex, $content, $match);
+                if ($match) {
+                    $uuid = $match[0];
+                    break;
+                }
             }
         }
-
         if (!is_uuid($uuid)) {
             throw new Exception(sprintf(
                 'Couldn\'t extract an UUID from the provided path \'%s\'.',
