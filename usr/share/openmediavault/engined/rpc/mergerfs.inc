@@ -34,6 +34,8 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         $this->registerMethod("get");
         $this->registerMethod("set");
         $this->registerMethod("delete");
+
+        $this->registerMethod("restartPool");
     }
 
     public function getList($params, $context)
@@ -75,8 +77,7 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
     {
         // Validate the RPC caller context.
         $this->validateMethodContext($context, ["role" => OMV_ROLE_ADMINISTRATOR]);
-        // Validate the parameters of the RPC service method.
-        //$this->validateMethodParams($params, "rpc.mergerfs.set");
+        $db = \OMV\Config\Database::getInstance();
         $ppaths = str_replace([',',':'], PHP_EOL, $params['paths']);
         $paths = explode(PHP_EOL, $ppaths);
         foreach ($params['sharedfolderrefs'] as $uuid) {
@@ -85,6 +86,14 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
                 $paths[] = $sfpath;
             }
         }
+        foreach ($params['filesystems'] as $uuid) {
+            if (is_uuid($uuid)) {
+                $fsObject = $db->get("conf.system.filesystem.mountpoint", $uuid);
+                $fspath = $fsObject->get("dir");
+                $paths[] = $fspath;
+            }
+        }
+        unset($params['filesystems']);
         unset($params['paths']);
         unset($params['sharedfolderrefs']);
         // remove bad lines in paths
@@ -100,7 +109,6 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         $object->setAssoc($params);
         // Set the configuration object.
         $isNew = $object->isNew();
-        $db = \OMV\Config\Database::getInstance();
         if (TRUE === $isNew) {
             // Check uniqueness
             $db->assertIsUnique($object, "name");
@@ -145,5 +153,30 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         ], $context);
         // Return the deleted configuration object.
         return $object->getAssoc();
+    }
+
+    public function restartPool($params, $context)
+    {
+        // Validate the RPC caller context.
+        $this->validateMethodContext($context, ['role' => OMV_ROLE_ADMINISTRATOR]);
+        // Get the configuration object.
+        $db = \OMV\Config\Database::getInstance();
+        $poolobj = $db->get("conf.service.mergerfs.pool", $params['uuid']);
+        $mntobj = $db->get("conf.system.filesystem.mountpoint", $poolobj->get('mntentref'));
+        // get escaped systemd mount
+        $cmdArgs = [];
+        $cmdArgs[] = '--path';
+        $cmdArgs[] = '--suffix=mount';
+        $cmdArgs[] = $mntobj->get('dir');
+        $output = [];
+        $cmd = new \OMV\System\Process('systemd-escape', $cmdArgs);
+        $cmd->execute($output, $exitStatus);
+        // restart systemd mount
+        $cmdArgs = [];
+        $cmdArgs[] = 'restart';
+        $cmdArgs[] = $output[0];
+        $output = [];
+        $cmd = new \OMV\System\Process('systemctl', $cmdArgs);
+        $cmd->execute($output, $exitStatus);
     }
 }

@@ -28,6 +28,9 @@
 			"sharedfolderrefs": {
 				"type": "string"
 			},
+			"filesystems": {
+				"type": "string"
+			},
 			"usepath": {
 				"type": "boolean"
 			},

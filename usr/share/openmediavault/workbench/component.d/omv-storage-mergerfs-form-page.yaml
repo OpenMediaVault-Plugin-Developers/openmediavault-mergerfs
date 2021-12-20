@@ -33,9 +33,25 @@ data:
               prop: mntentref
             arg1: "{{ newconfobjuuid }}"
       - type: select
+        name: filesystems
+        label: _("Filesystems")
+        multiple: true
+        hint: _("Optional. All filesystems will be converted to paths when saved.")
+        valueField: uuid
+        textField: description
+        store:
+          proxy:
+            service: ShareMgmt
+            get:
+              method: getCandidates
+          sorters:
+            dir: asc
+            prop: description
+      - type: select
         name: sharedfolderrefs
         label: _("Shared folders")
         multiple: true
+        hint: _("Optional. All shared folders will be converted to paths when saved.")
         valueField: uuid
         textField: description
         store:
@@ -97,7 +113,6 @@ data:
         name: fstab
         label: _("fstab")
         value: false
-        hint: _("Typically used when more than 10 to 15 branches are needed.<br/>fstab mounts may need a reboot if modified.")
       - type: textInput
         name: options
         label: _("Options")

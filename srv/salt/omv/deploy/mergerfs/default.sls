@@ -66,9 +66,13 @@ enable_{{ poolname }}_mergerfs:
     - name: {{ unitname }}
     - enable: True
 
+{% if not salt['mount.is_mounted'](pooldir) %}
+
 restart_{{ poolname }}_mergerfs:
   cmd.run:
     - name: systemctl restart {{ unitname }}
+
+{% endif %}
 
 {% endif %}
 {% endfor %}
