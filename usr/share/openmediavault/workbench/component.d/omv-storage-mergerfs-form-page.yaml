@@ -32,6 +32,9 @@ data:
             arg0:
               prop: mntentref
             arg1: "{{ newconfobjuuid }}"
+        validators:
+          required: true
+          patternType: 'shareName'
       - type: select
         name: filesystems
         label: _("Filesystems")
