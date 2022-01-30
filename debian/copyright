@@ -1,5 +1,9 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 
 Files: *
-Copyright: Copyright (C) 2020-2021 OpenMediaVault Plugin Developers <plugins@omv-extras.org>
+Copyright: Copyright (C) 2020-2022 OpenMediaVault Plugin Developers <plugins@omv-extras.org>
 License: GPL-3+
+
+Files: /usr/sbin/mergerfs.*
+Copyright: Copyright (C) 2016-2022 Antonio SJ Musumeci <trapexit@spawn.link>
+License: ISC

@@ -63,3 +63,190 @@ data:
         enabledConstraints:
           minSelected: 1
           maxSelected: 1
+      - type: iconButton
+        tooltip: _("Balance pool")
+        icon: mdi:scale-balance
+        execute:
+          type: taskDialog
+          taskDialog:
+            config:
+              title: _("Dedup pool - oldest ...")
+              startOnInit: true
+              request:
+                service: Mergerfs
+                method: toolsCommand
+                params:
+                  uuid: "{{ _selected[0].uuid }}"
+                  command: "balance"
+                  practice: false
+                  dedup: "none"
+        enabledConstraints:
+          minSelected: 1
+          maxSelected: 1
+      - type: menu
+        icon: mdi:minus-box-multiple-outline
+        tooltip: _("Deduplicate")
+        enabledConstraints:
+          minSelected: 1
+          maxSelected: 1
+        actions:
+          - text: _("Dedup oldest")
+            icon: mdi:clock-time-five
+            execute:
+              type: taskDialog
+              taskDialog:
+                config:
+                  title: _("Dedup pool - oldest ...")
+                  startOnInit: true
+                  request:
+                    service: Mergerfs
+                    method: toolsCommand
+                    params:
+                      uuid: "{{ _selected[0].uuid }}"
+                      command: "dedup"
+                      practice: false
+                      dedup: "oldest"
+          - text: _("Dedup oldest (practice)")
+            icon: mdi:clock-time-five-outline
+            execute:
+              type: taskDialog
+              taskDialog:
+                config:
+                  title: _("Dedup pool - oldest (practice) ...")
+                  startOnInit: true
+                  request:
+                    service: Mergerfs
+                    method: toolsCommand
+                    params:
+                      uuid: "{{ _selected[0].uuid }}"
+                      command: "dedup"
+                      practice: true
+                      dedup: "oldest"
+          - text: _("Dedup newest")
+            icon: mdi:clock-time-nine
+            execute:
+              type: taskDialog
+              taskDialog:
+                config:
+                  title: _("Dedup pool - newest ...")
+                  startOnInit: true
+                  request:
+                    service: Mergerfs
+                    method: toolsCommand
+                    params:
+                      uuid: "{{ _selected[0].uuid }}"
+                      command: "dedup"
+                      practice: false
+                      dedup: "newest"
+          - text: _("Dedup newest (practice)")
+            icon: mdi:clock-time-nine-outline
+            execute:
+              type: taskDialog
+              taskDialog:
+                config:
+                  title: _("Dedup pool - newest (practice) ...")
+                  startOnInit: true
+                  request:
+                    service: Mergerfs
+                    method: toolsCommand
+                    params:
+                      uuid: "{{ _selected[0].uuid }}"
+                      command: "dedup"
+                      practice: true
+                      dedup: "newest"
+          - text: _("Dedup smallest")
+            icon: mdi:alpha-s-circle
+            execute:
+              type: taskDialog
+              taskDialog:
+                config:
+                  title: _("Dedup pool - smallest ...")
+                  startOnInit: true
+                  request:
+                    service: Mergerfs
+                    method: toolsCommand
+                    params:
+                      uuid: "{{ _selected[0].uuid }}"
+                      command: "dedup"
+                      practice: false
+                      dedup: "smallest"
+          - text: _("Dedup smallest (practice)")
+            icon: mdi:alpha-s-circle-outline
+            execute:
+              type: taskDialog
+              taskDialog:
+                config:
+                  title: _("Dedup pool - smallest (practice) ...")
+                  startOnInit: true
+                  request:
+                    service: Mergerfs
+                    method: toolsCommand
+                    params:
+                      uuid: "{{ _selected[0].uuid }}"
+                      command: "dedup"
+                      practice: true
+                      dedup: "smallest"
+          - text: _("Dedup largest")
+            icon: mdi:alpha-l-circle
+            execute:
+              type: taskDialog
+              taskDialog:
+                config:
+                  title: _("Dedup pool - largest ...")
+                  startOnInit: true
+                  request:
+                    service: Mergerfs
+                    method: toolsCommand
+                    params:
+                      uuid: "{{ _selected[0].uuid }}"
+                      command: "dedup"
+                      practice: false
+                      dedup: "largest"
+          - text: _("Dedup largest (practice)")
+            icon: mdi:alpha-l-circle-outline
+            execute:
+              type: taskDialog
+              taskDialog:
+                config:
+                  title: _("Dedup pool - largest (practice) ...")
+                  startOnInit: true
+                  request:
+                    service: Mergerfs
+                    method: toolsCommand
+                    params:
+                      uuid: "{{ _selected[0].uuid }}"
+                      command: "dedup"
+                      practice: true
+                      dedup: "largest"
+          - text: _("Dedup most free space")
+            icon: mdi:arrow-up-bold-circle
+            execute:
+              type: taskDialog
+              taskDialog:
+                config:
+                  title: _("Dedup pool - most free space ...")
+                  startOnInit: true
+                  request:
+                    service: Mergerfs
+                    method: toolsCommand
+                    params:
+                      uuid: "{{ _selected[0].uuid }}"
+                      command: "dedup"
+                      practice: false
+                      dedup: "mostfreespace"
+          - text: _("Dedup most free space (practice)")
+            icon: mdi:arrow-up-bold-circle-outline
+            execute:
+              type: taskDialog
+              taskDialog:
+                config:
+                  title: _("Dedup pool - most free space (practice) ...")
+                  startOnInit: true
+                  request:
+                    service: Mergerfs
+                    method: toolsCommand
+                    params:
+                      uuid: "{{ _selected[0].uuid }}"
+                      command: "dedup"
+                      practice: true
+                      dedup: "mostfreespace"

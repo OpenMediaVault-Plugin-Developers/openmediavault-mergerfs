@@ -1,3 +1,4 @@
 srv/* srv
 usr/bin/* usr/bin
+usr/sbin/* usr/sbin
 usr/share/* usr/share

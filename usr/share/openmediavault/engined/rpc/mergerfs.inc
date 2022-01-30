@@ -3,7 +3,7 @@
  * @license   http://www.gnu.org/licenses/gpl.html GPL Version 3
  * @author    Volker Theile <volker.theile@openmediavault.org>
  * @copyright Copyright (c) 2009-2013 Volker Theile
- * @copyright Copyright (c) 2013-2021 OpenMediaVault Plugin Developers
+ * @copyright Copyright (c) 2013-2022 OpenMediaVault Plugin Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         $this->registerMethod("delete");
 
         $this->registerMethod("restartPool");
+        $this->registerMethod("toolsCommand");
     }
 
     public function getList($params, $context)
@@ -178,5 +179,39 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         $output = [];
         $cmd = new \OMV\System\Process('systemctl', $cmdArgs);
         $cmd->execute($output, $exitStatus);
+    }
+
+    public function toolsCommand($params, $context)
+    {
+        // Validate the RPC caller context.
+        $this->validateMethodContext($context, ['role' => OMV_ROLE_ADMINISTRATOR]);
+        // Get the configuration object.
+        $db = \OMV\Config\Database::getInstance();
+        $poolobj = $db->get("conf.service.mergerfs.pool", $params['uuid']);
+        $mntobj = $db->get("conf.system.filesystem.mountpoint", $poolobj->get('mntentref'));
+        // Create the background process.
+        return $this->execBgProc(function($bgStatusFilename, $bgOutputFilename)
+            use ($params, $mntobj) {
+                $cmdArgs = [];
+                $cmdArgs[] = sprintf('mergerfs.%s', $params['command']);
+                switch($params['command']) {
+                    case 'dedup':
+                        if (!$params['practice']) {
+                            $cmdArgs[] = "--execute";
+                        }
+                        $cmdArgs[] = "-vv";
+                        $cmdArgs[] = sprintf('--dedup=%s', $params['dedup']);
+                        break;
+                    case 'balance':
+                        break;
+                }
+                $cmdArgs[] = $mntobj->get('dir');
+                $cmd = new \OMV\System\Process($cmdArgs);
+                if (0 !== ($exitStatus = $this->exec($cmd->getCommandLine(), $output, $bgOutputFilename))) {
+                    throw new \OMV\ExecException($cmd->getCommandLine(), $output, $exitStatus);
+                }
+                return $output;
+            }
+        );
     }
 }

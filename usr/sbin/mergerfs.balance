@@ -1,0 +1,293 @@
+#!/usr/bin/env python3
+
+# Copyright (c) 2016, Antonio SJ Musumeci <trapexit@spawn.link>
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+import argparse
+import ctypes
+import errno
+import fnmatch
+import io
+import os
+import shlex
+import subprocess
+import sys
+
+
+_libc = ctypes.CDLL("libc.so.6",use_errno=True)
+_lgetxattr = _libc.lgetxattr
+_lgetxattr.argtypes = [ctypes.c_char_p,ctypes.c_char_p,ctypes.c_void_p,ctypes.c_size_t]
+def lgetxattr(path,name):
+    if type(path) == str:
+        path = path.encode(errors='backslashreplace')
+    if type(name) == str:
+        name = name.encode(errors='backslashreplace')
+    length = 64
+    while True:
+        buf = ctypes.create_string_buffer(length)
+        res = _lgetxattr(path,name,buf,ctypes.c_size_t(length))
+        if res >= 0:
+            return buf.raw[0:res].decode(errors='backslashreplace')
+        else:
+            err = ctypes.get_errno()
+            if err == errno.ERANGE:
+                length *= 2
+            elif err == errno.ENODATA:
+                return None
+            else:
+                raise IOError(err,os.strerror(err),path)
+
+
+def ismergerfs(path):
+    try:
+        lgetxattr(path,'user.mergerfs.version')
+        return True
+    except IOError as e:
+        return False
+
+
+def mergerfs_control_file(basedir):
+    if basedir == '/':
+        return None
+    ctrlfile = os.path.join(basedir,'.mergerfs')
+    if os.path.exists(ctrlfile):
+        return ctrlfile
+    else:
+        dirname = os.path.dirname(basedir)
+        return mergerfs_control_file(dirname)
+
+
+def mergerfs_srcmounts(ctrlfile):
+    srcmounts = lgetxattr(ctrlfile,'user.mergerfs.srcmounts')
+    srcmounts = srcmounts.split(':')
+    return srcmounts
+
+
+def match(filename,matches):
+    for match in matches:
+        if fnmatch.fnmatch(filename,match):
+            return True
+    return False
+
+
+def exclude_by_size(filepath,exclude_lt,exclude_gt):
+    try:
+        st = os.lstat(filepath)
+        if exclude_lt and st.st_size < exclude_lt:
+            return True
+        if exclude_gt and st.st_size > exclude_gt:
+            return True
+        return False
+    except:
+        return False
+
+
+def find_a_file(src,
+                relpath,
+                file_includes,file_excludes,
+                path_includes,path_excludes,
+                exclude_lt,exclude_gt):
+    basepath = os.path.join(src,relpath)
+    for (dirpath,dirnames,filenames) in os.walk(basepath):
+        for filename in filenames:
+            filepath = os.path.join(dirpath,filename)
+            if match(filename,file_excludes):
+                continue
+            if match(filepath,path_excludes):
+                continue
+            if not match(filename,file_includes):
+                continue
+            if not match(filepath,path_includes):
+                continue
+            if exclude_by_size(filepath,exclude_lt,exclude_gt):
+                continue
+            return os.path.relpath(filepath,src)
+    return None
+
+
+def execute(args):
+    return subprocess.call(args)
+
+
+def print_args(args):
+    quoted = [shlex.quote(arg) for arg in args]
+    print(' '.join(quoted))
+
+
+def build_move_file(src,dst,relfile):
+    frompath = os.path.join(src,'./',relfile)
+    topath   = dst+'/'
+    args = ['rsync',
+            '-avlHAXWE',
+            '--relative',
+            '--progress',
+            '--remove-source-files',
+            frompath,
+            topath]
+    return args
+
+
+def freespace_percentage(srcmounts):
+    lfsp = []
+    for srcmount in srcmounts:
+        vfs = os.statvfs(srcmount)
+        avail = vfs.f_bavail * vfs.f_frsize
+        total = vfs.f_blocks * vfs.f_frsize
+        per = avail / total
+        lfsp.append((srcmount,per))
+    return sorted(lfsp, key=lambda x: x[1])
+
+
+def all_within_range(l,n):
+    if len(l) == 0 or len(l) == 1:
+        return True
+    return (abs(l[0][1] - l[-1][1]) <= n)
+
+
+def human_to_bytes(s):
+    m = s[-1]
+    if   m == 'K':
+        i = int(s[0:-1]) * 1024
+    elif m == 'M':
+        i = int(s[0:-1]) * 1024 * 1024
+    elif m == 'G':
+        i = int(s[0:-1]) * 1024 * 1024 * 1024
+    elif m == 'T':
+        i = int(s[0:-1]) * 1024 * 1024 * 1024 * 1024
+    else:
+        i = int(s)
+
+    return i
+
+
+def buildargparser():
+    parser = argparse.ArgumentParser(description='balance files on a mergerfs mount based on percentage drive filled')
+    parser.add_argument('dir',
+                        type=str,
+                        help='starting directory')
+    parser.add_argument('-p',
+                        dest='percentage',
+                        type=float,
+                        default=2.0,
+                        help='percentage range of freespace (default 2.0)')
+    parser.add_argument('-i','--include',
+                        dest='include',
+                        type=str,
+                         action='append',
+                        default=[],
+                        help='fnmatch compatible file filter (can use multiple times)')
+    parser.add_argument('-e','--exclude',
+                        dest='exclude',
+                        type=str,
+                        action='append',
+                        default=[],
+                        help='fnmatch compatible file filter (can use multiple times)')
+    parser.add_argument('-I','--include-path',
+                        dest='includepath',
+                        type=str,
+                        action='append',
+                        default=[],
+                        help='fnmatch compatible path filter (can use multiple times)')
+    parser.add_argument('-E','--exclude-path',
+                        dest='excludepath',
+                        type=str,
+                        action='append',
+                        default=[],
+                        help='fnmatch compatible path filter (can use multiple times)')
+    parser.add_argument('-s',
+                        dest='excludelt',
+                        type=str,
+                        default='0',
+                        help='exclude files smaller than <int>[KMGT] bytes')
+    parser.add_argument('-S',
+                        dest='excludegt',
+                        type=str,
+                        default='0',
+                        help='exclude files larger than <int>[KMGT] bytes')
+    return parser
+
+
+def main():
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer,
+                                  encoding='utf8',
+                                  errors="backslashreplace",
+                                  line_buffering=True)
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer,
+                                  encoding='utf8',
+                                  errors="backslashreplace",
+                                  line_buffering=True)
+
+    parser = buildargparser()
+    args = parser.parse_args()
+
+    args.dir = os.path.realpath(args.dir)
+
+    ctrlfile = mergerfs_control_file(args.dir)
+    if not ismergerfs(ctrlfile):
+        print("%s is not a mergerfs mount" % args.dir)
+        sys.exit(1)
+
+    relpath = ''
+    mntpoint = os.path.dirname(ctrlfile)
+    if args.dir != mntpoint:
+        relpath = os.path.relpath(args.dir,mntpoint)
+
+    file_includes = ['*'] if not args.include else args.include
+    file_excludes = args.exclude
+    path_includes = ['*'] if not args.includepath else args.includepath
+    path_excludes = args.excludepath
+    exclude_lt    = human_to_bytes(args.excludelt)
+    exclude_gt    = human_to_bytes(args.excludegt)
+    srcmounts     = mergerfs_srcmounts(ctrlfile)
+    percentage    = args.percentage / 100
+
+    try:
+        l = freespace_percentage(srcmounts)
+        while not all_within_range(l,percentage):
+            todrive     = l[-1][0]
+            relfilepath = None
+            while not relfilepath and len(l):
+                fromdrive = l[0][0]
+                del l[0]
+                relfilepath = find_a_file(fromdrive,
+                                          relpath,
+                                          file_includes,file_excludes,
+                                          path_includes,path_excludes,
+                                          exclude_lt,exclude_gt)
+            if len(l) == 0:
+                print('Could not find file to transfer: exiting...')
+                break
+            if fromdrive == todrive:
+                print('Source drive == target drive: exiting...')
+                break
+
+            args = build_move_file(fromdrive,todrive,relfilepath)
+            print('file: {}\nfrom: {}\nto:   {}'.format(relfilepath,fromdrive,todrive))
+            print_args(args)
+            rv = execute(args)
+            if rv:
+                print('ERROR - exited with exit code: {}'.format(rv))
+                break
+            l = freespace_percentage(srcmounts)
+        print('Branches within {:.1%} range: '.format(percentage))
+        for (branch,percentage) in l:
+            print(' * {}: {:.2%} free'.format(branch,percentage))
+    except KeyboardInterrupt:
+        print("exiting: CTRL-C pressed")
+
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+   main()
