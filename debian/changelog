@@ -1,3 +1,9 @@
+openmediavault-mergerfs (6.1) stable; urgency=low
+
+  * Add mergerfs balance and dedup tools
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sun, 30 Jan 2022 14:51:03 -0600
+
 openmediavault-mergerfs (6.0.14) stable; urgency=low
 
   * Add filesystem selector
