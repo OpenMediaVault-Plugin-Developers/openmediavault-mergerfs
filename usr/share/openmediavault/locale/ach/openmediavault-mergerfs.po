@@ -1,0 +1,182 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the openmediavault-mergerfs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: openmediavault-mergerfs\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 08:07-0600\n"
+"PO-Revision-Date: 2022-03-04 14:10+0000\n"
+"Language-Team: Acoli (https://www.transifex.com/openmediavault-plugin-developers/teams/1854/ach/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ach\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Balance pool"
+msgstr ""
+
+msgid "Balance pool ..."
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "Create policy"
+msgstr ""
+
+msgid "Created pool."
+msgstr ""
+
+msgid "Dedup largest"
+msgstr ""
+
+msgid "Dedup largest (practice)"
+msgstr ""
+
+msgid "Dedup most free space"
+msgstr ""
+
+msgid "Dedup most free space (practice)"
+msgstr ""
+
+msgid "Dedup newest"
+msgstr ""
+
+msgid "Dedup newest (practice)"
+msgstr ""
+
+msgid "Dedup oldest"
+msgstr ""
+
+msgid "Dedup oldest (practice)"
+msgstr ""
+
+msgid "Dedup pool - largest (practice) ..."
+msgstr ""
+
+msgid "Dedup pool - largest ..."
+msgstr ""
+
+msgid "Dedup pool - most free space (practice) ..."
+msgstr ""
+
+msgid "Dedup pool - most free space ..."
+msgstr ""
+
+msgid "Dedup pool - newest (practice) ..."
+msgstr ""
+
+msgid "Dedup pool - newest ..."
+msgstr ""
+
+msgid "Dedup pool - oldest (practice) ..."
+msgstr ""
+
+msgid "Dedup pool - oldest ..."
+msgstr ""
+
+msgid "Dedup pool - smallest (practice) ..."
+msgstr ""
+
+msgid "Dedup pool - smallest ..."
+msgstr ""
+
+msgid "Dedup smallest"
+msgstr ""
+
+msgid "Dedup smallest (practice)"
+msgstr ""
+
+msgid "Deduplicate"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Edit pool."
+msgstr ""
+
+msgid "Enable"
+msgstr ""
+
+msgid "Enabled"
+msgstr ""
+
+msgid "Filesystems"
+msgstr ""
+
+msgid "Largest"
+msgstr ""
+
+msgid "Largest (practice)"
+msgstr ""
+
+msgid "Minimum free space"
+msgstr ""
+
+msgid "Most free space"
+msgstr ""
+
+msgid "Most free space (practice)"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Newest"
+msgstr ""
+
+msgid "Newest (practice)"
+msgstr ""
+
+msgid "Oldest"
+msgstr ""
+
+msgid "Oldest (practice)"
+msgstr ""
+
+msgid "Optional. All filesystems will be converted to paths when saved."
+msgstr ""
+
+msgid "Optional. All shared folders will be converted to paths when saved."
+msgstr ""
+
+msgid "Options"
+msgstr ""
+
+msgid "Paths"
+msgstr ""
+
+msgid "Put each folder on a new line."
+msgstr ""
+
+msgid "Restart pool"
+msgstr ""
+
+msgid "Shared folders"
+msgstr ""
+
+msgid "Smallest"
+msgstr ""
+
+msgid "Smallest (practice)"
+msgstr ""
+
+msgid "Unit"
+msgstr ""
+
+msgid ""
+"When the minimum free space is reached on a filesystem it will not be "
+"written to unless all the other filesystem also has reached the limit."
+msgstr ""
+
+msgid "fstab"
+msgstr ""
+
+msgid "mergerfs"
+msgstr ""
