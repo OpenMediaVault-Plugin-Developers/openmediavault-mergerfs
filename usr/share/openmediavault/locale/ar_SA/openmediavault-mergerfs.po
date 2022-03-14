@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-04 08:07-0600\n"
+"POT-Creation-Date: 2022-03-14 16:57-0500\n"
 "PO-Revision-Date: 2022-03-04 14:10+0000\n"
 "Language-Team: Arabic (Saudi Arabia) (https://www.transifex.com/openmediavault-plugin-developers/teams/1854/ar_SA/)\n"
 "MIME-Version: 1.0\n"
@@ -95,6 +95,9 @@ msgstr ""
 msgid "Deduplicate"
 msgstr ""
 
+msgid "Docs"
+msgstr ""
+
 msgid "Edit"
 msgstr ""
 
@@ -179,4 +182,7 @@ msgid "fstab"
 msgstr ""
 
 msgid "mergerfs"
+msgstr ""
+
+msgid "mergerfs tools"
 msgstr ""

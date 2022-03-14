@@ -1,3 +1,9 @@
+openmediavault-mergerfs (6.1.1) stable; urgency=low
+
+  * Add buttons to mergerfs docs
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Mon, 14 Mar 2022 16:56:47 -0500
+
 openmediavault-mergerfs (6.1) stable; urgency=low
 
   * Add mergerfs balance and dedup tools

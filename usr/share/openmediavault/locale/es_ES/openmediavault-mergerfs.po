@@ -3,13 +3,17 @@
 # This file is distributed under the same license as the openmediavault-mergerfs package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
+# Translators:
+# Raul Fernandez Garcia <raulfg3@gmail.com>, 2022
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-04 08:07-0600\n"
+"POT-Creation-Date: 2022-03-14 16:57-0500\n"
 "PO-Revision-Date: 2022-03-04 14:10+0000\n"
+"Last-Translator: Raul Fernandez Garcia <raulfg3@gmail.com>, 2022\n"
 "Language-Team: Spanish (https://www.transifex.com/openmediavault-plugin-developers/teams/1854/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,165 +22,178 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Balance pool"
-msgstr ""
+msgstr "Balancear el pool"
 
 msgid "Balance pool ..."
-msgstr ""
+msgstr "balancear pool ..."
 
 msgid "Create"
-msgstr ""
+msgstr "Crear"
 
 msgid "Create policy"
-msgstr ""
+msgstr "Política de creación"
 
 msgid "Created pool."
-msgstr ""
+msgstr "Pool creado."
 
 msgid "Dedup largest"
-msgstr ""
+msgstr "Deduplicación más grande"
 
 msgid "Dedup largest (practice)"
-msgstr ""
+msgstr "Deduplicación más grande (prueba)"
 
 msgid "Dedup most free space"
-msgstr ""
+msgstr "Deduplicación mayor espacio libre"
 
 msgid "Dedup most free space (practice)"
-msgstr ""
+msgstr "Deduplicación mayor espacio libre (prueba)"
 
 msgid "Dedup newest"
-msgstr ""
+msgstr "Deduplicación mas nuevo"
 
 msgid "Dedup newest (practice)"
-msgstr ""
+msgstr "Deduplicación mas nuevo (prueba)"
 
 msgid "Dedup oldest"
-msgstr ""
+msgstr "Deduplicación mas viejo"
 
 msgid "Dedup oldest (practice)"
-msgstr ""
+msgstr "Deduplicación mas viejo (prueba)"
 
 msgid "Dedup pool - largest (practice) ..."
-msgstr ""
+msgstr "Deduplicación mas grande (prueba) ..."
 
 msgid "Dedup pool - largest ..."
-msgstr ""
+msgstr "Deduplicación mas grande ..."
 
 msgid "Dedup pool - most free space (practice) ..."
-msgstr ""
+msgstr "Deduplicación mayor espacio libre (prueba) ..."
 
 msgid "Dedup pool - most free space ..."
-msgstr ""
+msgstr "Deduplicación mayor espacio libre ..."
 
 msgid "Dedup pool - newest (practice) ..."
-msgstr ""
+msgstr "Deduplicación más reciente (prueba) ..."
 
 msgid "Dedup pool - newest ..."
-msgstr ""
+msgstr "Deduplicación más reciente ..."
 
 msgid "Dedup pool - oldest (practice) ..."
-msgstr ""
+msgstr "Deduplicación más viejo (prueba) ..."
 
 msgid "Dedup pool - oldest ..."
-msgstr ""
+msgstr "Deduplicación más viejo ..."
 
 msgid "Dedup pool - smallest (practice) ..."
-msgstr ""
+msgstr "Deduplicación más pequeño (prueba) ..."
 
 msgid "Dedup pool - smallest ..."
-msgstr ""
+msgstr "Deduplicación más pequeño ..."
 
 msgid "Dedup smallest"
-msgstr ""
+msgstr "Deduplicación más pequeño"
 
 msgid "Dedup smallest (practice)"
-msgstr ""
+msgstr "Deduplicación más pequeño (prueba)"
 
 msgid "Deduplicate"
+msgstr "Deduplicación"
+
+msgid "Docs"
 msgstr ""
 
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 msgid "Edit pool."
-msgstr ""
+msgstr "Editar pool."
 
 msgid "Enable"
-msgstr ""
+msgstr "Habilitar"
 
 msgid "Enabled"
-msgstr ""
+msgstr "Habilitado"
 
 msgid "Filesystems"
-msgstr ""
+msgstr "Sistema de Archivos"
 
 msgid "Largest"
-msgstr ""
+msgstr "Mayor"
 
 msgid "Largest (practice)"
-msgstr ""
+msgstr "Mayor (prueba)"
 
 msgid "Minimum free space"
-msgstr ""
+msgstr "Menor espacio libre"
 
 msgid "Most free space"
-msgstr ""
+msgstr "Mayor espacio libre"
 
 msgid "Most free space (practice)"
-msgstr ""
+msgstr "Mayor espacio libre (prueba)"
 
 msgid "Name"
-msgstr ""
+msgstr "Nombre"
 
 msgid "Newest"
-msgstr ""
+msgstr "más reciente"
 
 msgid "Newest (practice)"
-msgstr ""
+msgstr "Más recientes (probar)"
 
 msgid "Oldest"
-msgstr ""
+msgstr "Más antiguo"
 
 msgid "Oldest (practice)"
-msgstr ""
+msgstr "Más antiguo (probar)"
 
 msgid "Optional. All filesystems will be converted to paths when saved."
 msgstr ""
+"Opcional. Todos los sistemas de archivos se convertirán en rutas cuando se "
+"guarden."
 
 msgid "Optional. All shared folders will be converted to paths when saved."
 msgstr ""
+"Opcional. Todas las carpetas compartidas se convertirán en rutas cuando se "
+"guarden."
 
 msgid "Options"
-msgstr ""
+msgstr "Opciones"
 
 msgid "Paths"
-msgstr ""
+msgstr "Rutas"
 
 msgid "Put each folder on a new line."
-msgstr ""
+msgstr "Poner cada carpeta en una nueva linea."
 
 msgid "Restart pool"
-msgstr ""
+msgstr "Reiniciar el pool"
 
 msgid "Shared folders"
-msgstr ""
+msgstr "Carpetas compartidas"
 
 msgid "Smallest"
-msgstr ""
+msgstr "Más pequeño"
 
 msgid "Smallest (practice)"
-msgstr ""
+msgstr "Más pequeño (prueba)"
 
 msgid "Unit"
-msgstr ""
+msgstr "Unidad"
 
 msgid ""
 "When the minimum free space is reached on a filesystem it will not be "
 "written to unless all the other filesystem also has reached the limit."
 msgstr ""
+"Cuando se alcanza el espacio libre mínimo en un sistema de archivos, no se "
+"escribirá a menos que todos los demás sistemas de archivos también hayan "
+"alcanzado el límite."
 
 msgid "fstab"
-msgstr ""
+msgstr "fstab"
 
 msgid "mergerfs"
+msgstr "mergerfs"
+
+msgid "mergerfs tools"
 msgstr ""

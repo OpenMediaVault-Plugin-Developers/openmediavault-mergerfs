@@ -3,13 +3,17 @@
 # This file is distributed under the same license as the openmediavault-mergerfs package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
+# Translators:
+# songming <by@songming.me>, 2022
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-04 08:07-0600\n"
+"POT-Creation-Date: 2022-03-14 16:57-0500\n"
 "PO-Revision-Date: 2022-03-04 14:10+0000\n"
+"Last-Translator: songming <by@songming.me>, 2022\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/openmediavault-plugin-developers/teams/1854/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,165 +22,171 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 msgid "Balance pool"
-msgstr ""
+msgstr "平衡池"
 
 msgid "Balance pool ..."
-msgstr ""
+msgstr "平衡池 ..."
 
 msgid "Create"
-msgstr ""
+msgstr "创建"
 
 msgid "Create policy"
-msgstr ""
+msgstr "创建策略"
 
 msgid "Created pool."
-msgstr ""
+msgstr "创建池。"
 
 msgid "Dedup largest"
-msgstr ""
+msgstr "去重取最大"
 
 msgid "Dedup largest (practice)"
-msgstr ""
+msgstr "去重取最大（实践）"
 
 msgid "Dedup most free space"
-msgstr ""
+msgstr "去重取剩余空间最大"
 
 msgid "Dedup most free space (practice)"
-msgstr ""
+msgstr "去重取最大剩余空间（实践）"
 
 msgid "Dedup newest"
-msgstr ""
+msgstr "去重取最新"
 
 msgid "Dedup newest (practice)"
-msgstr ""
+msgstr "去重取最新（实践）"
 
 msgid "Dedup oldest"
-msgstr ""
+msgstr "去重取最旧"
 
 msgid "Dedup oldest (practice)"
-msgstr ""
+msgstr "去重取最旧（实践）"
 
 msgid "Dedup pool - largest (practice) ..."
-msgstr ""
+msgstr "去重池 - 最大（实践）..."
 
 msgid "Dedup pool - largest ..."
-msgstr ""
+msgstr "去重池 - 最大 ..."
 
 msgid "Dedup pool - most free space (practice) ..."
-msgstr ""
+msgstr "去重池 - 最大剩余空间（实践）..."
 
 msgid "Dedup pool - most free space ..."
-msgstr ""
+msgstr "去重池 - 最大剩余空间 ..."
 
 msgid "Dedup pool - newest (practice) ..."
-msgstr ""
+msgstr "去重池 - 最新（实践）..."
 
 msgid "Dedup pool - newest ..."
-msgstr ""
+msgstr "去重池 - 最新 ..."
 
 msgid "Dedup pool - oldest (practice) ..."
-msgstr ""
+msgstr "去重池 - 最旧（实践）..."
 
 msgid "Dedup pool - oldest ..."
-msgstr ""
+msgstr "去重池 - 最旧 ..."
 
 msgid "Dedup pool - smallest (practice) ..."
-msgstr ""
+msgstr "去重池 - 最小（实践）"
 
 msgid "Dedup pool - smallest ..."
-msgstr ""
+msgstr "去重池 - 最小 ..."
 
 msgid "Dedup smallest"
-msgstr ""
+msgstr "去重池取最小"
 
 msgid "Dedup smallest (practice)"
-msgstr ""
+msgstr "去重池取最小（实践）"
 
 msgid "Deduplicate"
+msgstr "去重"
+
+msgid "Docs"
 msgstr ""
 
 msgid "Edit"
-msgstr ""
+msgstr "编辑"
 
 msgid "Edit pool."
-msgstr ""
+msgstr "编辑池。"
 
 msgid "Enable"
-msgstr ""
+msgstr "启用"
 
 msgid "Enabled"
-msgstr ""
+msgstr "已启用"
 
 msgid "Filesystems"
-msgstr ""
+msgstr "文件系统"
 
 msgid "Largest"
-msgstr ""
+msgstr "最大"
 
 msgid "Largest (practice)"
-msgstr ""
+msgstr "最大（实践）"
 
 msgid "Minimum free space"
-msgstr ""
+msgstr "最小剩余空间"
 
 msgid "Most free space"
-msgstr ""
+msgstr "最大剩余空间"
 
 msgid "Most free space (practice)"
-msgstr ""
+msgstr "最大剩余空间（实践）"
 
 msgid "Name"
-msgstr ""
+msgstr "名称"
 
 msgid "Newest"
-msgstr ""
+msgstr "最新"
 
 msgid "Newest (practice)"
-msgstr ""
+msgstr "最新（实践）"
 
 msgid "Oldest"
-msgstr ""
+msgstr "最旧"
 
 msgid "Oldest (practice)"
-msgstr ""
+msgstr "最旧（实践）"
 
 msgid "Optional. All filesystems will be converted to paths when saved."
-msgstr ""
+msgstr "可选项。保存时所有文件系统将转换为路径。"
 
 msgid "Optional. All shared folders will be converted to paths when saved."
-msgstr ""
+msgstr "可选项。保存时所有共享文件夹将转换为路径。"
 
 msgid "Options"
-msgstr ""
+msgstr "选项"
 
 msgid "Paths"
-msgstr ""
+msgstr "路径"
 
 msgid "Put each folder on a new line."
-msgstr ""
+msgstr "每个文件夹换行。"
 
 msgid "Restart pool"
-msgstr ""
+msgstr "重启池"
 
 msgid "Shared folders"
-msgstr ""
+msgstr "共享文件夹"
 
 msgid "Smallest"
-msgstr ""
+msgstr "最小"
 
 msgid "Smallest (practice)"
-msgstr ""
+msgstr "最小（实践）"
 
 msgid "Unit"
-msgstr ""
+msgstr "单位"
 
 msgid ""
 "When the minimum free space is reached on a filesystem it will not be "
 "written to unless all the other filesystem also has reached the limit."
-msgstr ""
+msgstr "当一个文件系统上可用空间达到最小值时，文件将不写入到此文件系统，如果所有文件系统可用空间都达到最小值时，那么这个文件会写入失败。"
 
 msgid "fstab"
-msgstr ""
+msgstr "fstab"
 
 msgid "mergerfs"
+msgstr "mergerfs"
+
+msgid "mergerfs tools"
 msgstr ""

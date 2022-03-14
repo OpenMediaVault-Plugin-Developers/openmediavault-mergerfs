@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-04 08:07-0600\n"
+"POT-Creation-Date: 2022-03-14 16:57-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -95,6 +95,9 @@ msgstr ""
 msgid "Deduplicate"
 msgstr ""
 
+msgid "Docs"
+msgstr ""
+
 msgid "Edit"
 msgstr ""
 
@@ -177,4 +180,7 @@ msgid "fstab"
 msgstr ""
 
 msgid "mergerfs"
+msgstr ""
+
+msgid "mergerfs tools"
 msgstr ""
