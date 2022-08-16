@@ -112,10 +112,6 @@ data:
                 - ['K', _('Kilobytes')]
                 - ['M', _('Megabytes')]
                 - ['G', _('Gigabytes')]
-      - type: checkbox
-        name: fstab
-        label: _("fstab")
-        value: false
       - type: textInput
         name: options
         label: _("Options")

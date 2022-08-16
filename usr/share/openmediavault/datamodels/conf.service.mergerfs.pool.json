@@ -15,9 +15,6 @@
 		"enable": {
 			"type": "boolean"
 		},
-		"fstab": {
-			"type": "boolean"
-		},
 		"name": {
 			"type": "string",
 			"minLength": 1

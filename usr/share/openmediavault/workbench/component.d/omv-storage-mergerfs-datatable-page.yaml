@@ -27,10 +27,6 @@ data:
       - name: _("Paths")
         prop: pathsa
         flexGrow: 5
-      - name: _("fstab")
-        prop: fstab
-        flexGrow: 1
-        cellTemplateName: checkIcon
     actions:
       - template: create
         execute:
