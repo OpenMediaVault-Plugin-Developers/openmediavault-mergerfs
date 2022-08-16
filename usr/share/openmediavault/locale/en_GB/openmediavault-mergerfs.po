@@ -3,13 +3,17 @@
 # This file is distributed under the same license as the openmediavault-mergerfs package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
+# Translators:
+# Andi Chandler <andi@gowling.com>, 2022
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-14 16:57-0500\n"
+"POT-Creation-Date: 2022-08-16 18:39-0500\n"
 "PO-Revision-Date: 2022-03-04 14:10+0000\n"
+"Last-Translator: Andi Chandler <andi@gowling.com>, 2022\n"
 "Language-Team: English (United Kingdom) (https://www.transifex.com/openmediavault-plugin-developers/teams/1854/en_GB/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,171 +22,173 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Balance pool"
-msgstr ""
+msgstr "Balance pool"
 
 msgid "Balance pool ..."
-msgstr ""
+msgstr "Balance pool ..."
 
 msgid "Create"
-msgstr ""
+msgstr "Create"
 
 msgid "Create policy"
-msgstr ""
+msgstr "Create policy"
 
 msgid "Created pool."
-msgstr ""
+msgstr "Created pool."
 
 msgid "Dedup largest"
-msgstr ""
+msgstr "Dedup largest"
 
 msgid "Dedup largest (practice)"
-msgstr ""
+msgstr "Dedup largest (practice)"
 
 msgid "Dedup most free space"
-msgstr ""
+msgstr "Dedup most free space"
 
 msgid "Dedup most free space (practice)"
-msgstr ""
+msgstr "Dedup most free space (practice)"
 
 msgid "Dedup newest"
-msgstr ""
+msgstr "Dedup newest"
 
 msgid "Dedup newest (practice)"
-msgstr ""
+msgstr "Dedup newest (practice)"
 
 msgid "Dedup oldest"
-msgstr ""
+msgstr "Dedup oldest"
 
 msgid "Dedup oldest (practice)"
-msgstr ""
+msgstr "Dedup oldest (practice)"
 
 msgid "Dedup pool - largest (practice) ..."
-msgstr ""
+msgstr "Dedup pool - largest (practice) ..."
 
 msgid "Dedup pool - largest ..."
-msgstr ""
+msgstr "Dedup pool - largest ..."
 
 msgid "Dedup pool - most free space (practice) ..."
-msgstr ""
+msgstr "Dedup pool - most free space (practice) ..."
 
 msgid "Dedup pool - most free space ..."
-msgstr ""
+msgstr "Dedup pool - most free space ..."
 
 msgid "Dedup pool - newest (practice) ..."
-msgstr ""
+msgstr "Dedup pool - newest (practice) ..."
 
 msgid "Dedup pool - newest ..."
-msgstr ""
+msgstr "Dedup pool - newest ..."
 
 msgid "Dedup pool - oldest (practice) ..."
-msgstr ""
+msgstr "Dedup pool - oldest (practice) ..."
 
 msgid "Dedup pool - oldest ..."
-msgstr ""
+msgstr "Dedup pool - oldest ..."
 
 msgid "Dedup pool - smallest (practice) ..."
-msgstr ""
+msgstr "Dedup pool - smallest (practice) ..."
 
 msgid "Dedup pool - smallest ..."
-msgstr ""
+msgstr "Dedup pool - smallest ..."
 
 msgid "Dedup smallest"
-msgstr ""
+msgstr "Dedup smallest"
 
 msgid "Dedup smallest (practice)"
-msgstr ""
+msgstr "Dedup smallest (practice)"
 
 msgid "Deduplicate"
-msgstr ""
+msgstr "Deduplicate"
 
 msgid "Docs"
-msgstr ""
+msgstr "Docs"
 
 msgid "Edit"
-msgstr ""
+msgstr "Edit"
 
 msgid "Edit pool."
-msgstr ""
+msgstr "Edit pool."
 
 msgid "Enable"
-msgstr ""
+msgstr "Enable"
 
 msgid "Enabled"
-msgstr ""
+msgstr "Enabled"
 
 msgid "Filesystems"
-msgstr ""
+msgstr "Filesystems"
 
 msgid "Largest"
-msgstr ""
+msgstr "Largest"
 
 msgid "Largest (practice)"
-msgstr ""
+msgstr "Largest (practice)"
 
 msgid "Minimum free space"
-msgstr ""
+msgstr "Minimum free space"
 
 msgid "Most free space"
-msgstr ""
+msgstr "Most free space"
 
 msgid "Most free space (practice)"
-msgstr ""
+msgstr "Most free space (practice)"
 
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 msgid "Newest"
-msgstr ""
+msgstr "Newest"
 
 msgid "Newest (practice)"
-msgstr ""
+msgstr "Newest (practice)"
 
 msgid "Oldest"
-msgstr ""
+msgstr "Oldest"
 
 msgid "Oldest (practice)"
-msgstr ""
+msgstr "Oldest (practice)"
 
 msgid "Optional. All filesystems will be converted to paths when saved."
-msgstr ""
+msgstr "Optional. All filesystems will be converted to paths when saved."
 
 msgid "Optional. All shared folders will be converted to paths when saved."
-msgstr ""
+msgstr "Optional. All shared folders will be converted to paths when saved."
 
 msgid "Options"
-msgstr ""
+msgstr "Options"
 
 msgid "Paths"
-msgstr ""
+msgstr "Paths"
 
 msgid "Put each folder on a new line."
-msgstr ""
+msgstr "Put each folder on a new line."
 
 msgid "Restart pool"
-msgstr ""
+msgstr "Restart pool"
 
 msgid "Shared folders"
-msgstr ""
+msgstr "Shared folders"
 
 msgid "Smallest"
-msgstr ""
+msgstr "Smallest"
 
 msgid "Smallest (practice)"
-msgstr ""
+msgstr "Smallest (practice)"
 
 msgid "Unit"
-msgstr ""
+msgstr "Unit"
 
 msgid ""
 "When the minimum free space is reached on a filesystem it will not be "
 "written to unless all the other filesystem also has reached the limit."
 msgstr ""
+"When the minimum free space is reached on a filesystem it will not be "
+"written to unless all the other filesystem also has reached the limit."
 
 msgid "fstab"
-msgstr ""
+msgstr "fstab"
 
 msgid "mergerfs"
-msgstr ""
+msgstr "mergerfs"
 
 msgid "mergerfs tools"
-msgstr ""
+msgstr "mergerfs tools"
