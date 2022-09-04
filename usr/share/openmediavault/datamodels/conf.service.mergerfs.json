@@ -19,9 +19,6 @@
 								"type": "string",
 								"format": "uuidv4"
 							},
-							"enable": {
-								"type": "boolean"
-							},
 							"name": {
 								"type": "string",
 								"minLength": 1

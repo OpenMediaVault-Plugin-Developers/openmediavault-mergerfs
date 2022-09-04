@@ -35,7 +35,7 @@ remove_mergerfs_mount_files_{{ mountsdir }}:
       - iname: "{{ pooldiresc }}-*.mount"
       - delete: "f"
 
-{% for pool in config.pools.pool | selectattr('enable') %}
+{% for pool in config.pools.pool %}
 {% if pool.mntentref | length == 36 %}
 
 {% set poolmount = salt['omv_conf.get']('conf.system.filesystem.mountpoint', pool.mntentref) -%}

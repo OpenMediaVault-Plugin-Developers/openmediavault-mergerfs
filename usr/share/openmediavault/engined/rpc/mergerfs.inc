@@ -71,6 +71,11 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         $object = $db->get("conf.service.mergerfs.pool", $params['uuid']);
         $paths = str_replace(':', PHP_EOL, $object->get("paths"));
         $object->set("paths", $paths);
+        $ro = false;
+        if (strlen($object->get("name")) > 0) {
+            $ro = true;
+        }
+        $object->add("namero", "boolean", $ro);
         return $object->getAssoc();
     }
 

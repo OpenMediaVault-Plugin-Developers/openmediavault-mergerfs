@@ -17,21 +17,20 @@ data:
       - type: hidden
         name: mntentref
         value: "{{ newconfobjuuid }}"
-      - type: checkbox
-        name: enable
-        label: _("Enable")
-        value: true
+      - type: hidden
+        name: namero
+        value: false
+        submitValue: false
       - type: textInput
         name: name
         label: _("Name")
         value: ""
         modifiers:
-          type: disabled
-          constraint:
-            operator: ne
-            arg0:
-              prop: mntentref
-            arg1: "{{ newconfobjuuid }}"
+          - type: disabled
+            constraint:
+              operator: truthy
+              arg0:
+                prop: namero
         validators:
           required: true
           patternType: 'shareName'

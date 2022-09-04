@@ -16,10 +16,6 @@ data:
         get:
           method: getList
     columns:
-      - name: _("Enabled")
-        prop: enable
-        flexGrow: 1
-        cellTemplateName: checkIcon
       - name: _("Name")
         prop: name
         sortable: true

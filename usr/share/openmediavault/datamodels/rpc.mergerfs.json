@@ -9,9 +9,6 @@
 				"format": "uuidv4",
 				"required": true
 			},
-			"enable": {
-				"type": "boolean"
-			},
 			"name": {
 				"type": "string",
 				"required": true

@@ -1,3 +1,9 @@
+openmediavault-mergerfs (6.3) stable; urgency=low
+
+  * Remove pool enable
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sun, 04 Sep 2022 17:15:34 -0500
+
 openmediavault-mergerfs (6.2) stable; urgency=low
 
   * Remove fstab option and migrate existing pools to systemd mounts

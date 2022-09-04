@@ -38,7 +38,6 @@ if omv_config_exists "/config/services/mergerfsfolders"; then
     # make sure entry does not exist already
     if ! omv_config_exists "/config/services/mergerfs/pools/pool[uuid='${uuid}']"; then
       object="<uuid>${uuid}</uuid>"
-      object="${object}<enable>1</enable>"
       object="${object}<name>${name}</name>"
       object="${object}<mntentref>${mntentref}</mntentref>"
       object="${object}<paths>${paths2}</paths>"
@@ -85,7 +84,6 @@ if omv_config_exists "/config/services/unionfilesystems"; then
     # make sure entry does not exist already
     if ! omv_config_exists "/config/services/mergerfs/pools/pool[uuid='${uuid}']"; then
       object="<uuid>${uuid}</uuid>"
-      object="${object}<enable>1</enable>"
       object="${object}<name>${name}</name>"
       object="${object}<mntentref>${mntentref}</mntentref>"
       object="${object}<paths>${paths}</paths>"
