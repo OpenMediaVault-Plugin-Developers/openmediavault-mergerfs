@@ -53,6 +53,17 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         foreach ($objects as $objectk => &$objectv) {
             $paths = str_replace([',',':', PHP_EOL], '<br />', $objectv->get("paths"));
             $objectv->add("pathsa", "string", $paths);
+            $mntentref = $objectv->get("mntentref");
+	        $sfobjects = $db->get("conf.system.sharedfolder");
+            $inuse = false;
+            foreach ($sfobjects as $sfobject) {
+                $sfmntentref = $sfobject->get("mntentref");
+                if ($mntentref == $sfmntentref) {
+                    $inuse = true;
+                    break;
+                }
+            }
+            $objectv->add("inuse", "boolean", $inuse);
             $objectsAssoc[] = $objectv->getAssoc();
         }
         // Filter the result.

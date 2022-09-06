@@ -23,6 +23,11 @@ data:
       - name: _("Paths")
         prop: pathsa
         flexGrow: 5
+      - name: _("Shared")
+        prop: inuse
+        sortable: true
+        flexGrow: 1
+        cellTemplateName: checkIcon
     actions:
       - template: create
         execute:
@@ -32,7 +37,9 @@ data:
         execute:
           type: url
           url: "/storage/mergerfs/edit/{{ _selected[0].uuid }}"
-      - template: delete
+      - type: iconButton
+        tooltip: _("Delete")
+        icon: delete
         execute:
           type: request
           request:
@@ -40,6 +47,13 @@ data:
             method: delete
             params:
               uuid: "{{ _selected[0].uuid }}"
+        enabledConstraints:
+          minSelected: 1
+          maxSelected: 1
+          constraint:
+            - operator: falsy
+              arg0:
+                prop: inuse
       - type: iconButton
         tooltip: _("Restart pool")
         icon: mdi:restart
