@@ -1,3 +1,10 @@
+openmediavault-mergerfs (6.3.2) stable; urgency=low
+
+  * Add Shared column
+  * Prevent pool deletion when shared
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Tue, 06 Sep 2022 08:22:53 -0500
+
 openmediavault-mergerfs (6.3.1) stable; urgency=low
 
   * Remove dead symlinks from systemd multi-user.target
