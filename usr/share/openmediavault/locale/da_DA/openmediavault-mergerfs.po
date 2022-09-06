@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-04 17:16-0500\n"
+"POT-Creation-Date: 2022-09-06 08:23-0500\n"
 "PO-Revision-Date: 2022-03-04 14:10+0000\n"
 "Language-Team: Danish (https://www.transifex.com/openmediavault-plugin-developers/teams/1854/da/)\n"
 "MIME-Version: 1.0\n"
@@ -95,6 +95,9 @@ msgstr ""
 msgid "Deduplicate"
 msgstr ""
 
+msgid "Delete"
+msgstr ""
+
 msgid "Docs"
 msgstr ""
 
@@ -159,6 +162,9 @@ msgid "Put each folder on a new line."
 msgstr ""
 
 msgid "Restart pool"
+msgstr ""
+
+msgid "Shared"
 msgstr ""
 
 msgid "Shared folders"

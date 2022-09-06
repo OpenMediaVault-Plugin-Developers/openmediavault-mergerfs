@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-04 17:16-0500\n"
+"POT-Creation-Date: 2022-09-06 08:23-0500\n"
 "PO-Revision-Date: 2022-03-04 14:10+0000\n"
 "Last-Translator: songming <by@songming.me>, 2022\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/openmediavault-plugin-developers/teams/1854/zh_CN/)\n"
@@ -99,6 +99,9 @@ msgstr "去重池取最小（实践）"
 msgid "Deduplicate"
 msgstr "去重"
 
+msgid "Delete"
+msgstr ""
+
 msgid "Docs"
 msgstr "文档"
 
@@ -164,6 +167,9 @@ msgstr "每个文件夹换行。"
 
 msgid "Restart pool"
 msgstr "重启池"
+
+msgid "Shared"
+msgstr ""
 
 msgid "Shared folders"
 msgstr "共享文件夹"

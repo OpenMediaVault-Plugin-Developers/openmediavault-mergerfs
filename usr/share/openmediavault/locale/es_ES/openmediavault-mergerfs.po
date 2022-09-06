@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-04 17:16-0500\n"
+"POT-Creation-Date: 2022-09-06 08:23-0500\n"
 "PO-Revision-Date: 2022-03-04 14:10+0000\n"
 "Last-Translator: Raul Fernandez Garcia <raulfg3@gmail.com>, 2022\n"
 "Language-Team: Spanish (https://www.transifex.com/openmediavault-plugin-developers/teams/1854/es/)\n"
@@ -99,6 +99,9 @@ msgstr "Deduplicación más pequeño (prueba)"
 msgid "Deduplicate"
 msgstr "Deduplicación"
 
+msgid "Delete"
+msgstr ""
+
 msgid "Docs"
 msgstr "Docs"
 
@@ -168,6 +171,9 @@ msgstr "Poner cada carpeta en una nueva linea."
 
 msgid "Restart pool"
 msgstr "Reiniciar el pool"
+
+msgid "Shared"
+msgstr ""
 
 msgid "Shared folders"
 msgstr "Carpetas compartidas"
