@@ -1,3 +1,9 @@
+openmediavault-mergerfs (6.3.1) stable; urgency=low
+
+  * Remove dead symlinks from systemd multi-user.target
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Mon, 05 Sep 2022 19:03:44 -0500
+
 openmediavault-mergerfs (6.3) stable; urgency=low
 
   * Remove pool enable
