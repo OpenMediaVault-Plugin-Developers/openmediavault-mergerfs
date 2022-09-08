@@ -100,8 +100,8 @@ if omv_config_exists "/config/services/unionfilesystems"; then
 fi
 
 if [ ${import} -eq 1 ]; then
-  # create new mount files from imported pools
-  omv-salt deploy run mergerfs
+  omv_module_set_dirty fstab
+  omv_module_set_dirty mergerfs
 fi
 
 exit 0
