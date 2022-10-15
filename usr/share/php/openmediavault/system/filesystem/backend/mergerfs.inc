@@ -22,6 +22,7 @@ namespace OMV\System\Filesystem\Backend;
 use OMV\Config\Database;
 use OMV\Exception;
 use OMV\System\Filesystem\Union;
+use OMV\System\Process;
 use SplFileObject;
 
 class Mergerfs extends UnionAbstract
@@ -93,6 +94,13 @@ class Mergerfs extends UnionAbstract
                     break;
                 }
             }
+        }
+        if (!is_uuid($uuid)) {
+            $units = '/etc/systemd/system/srv-mergerfs-*';
+            $args = sprintf('grep -B1 -h "%s" %s | awk -F":" \'/What/ { print $2 }\'', $mountPoint, $units);
+            $cmd = new Process($args);
+            $cmd->execute($output);
+            $uuid = $output[0];
         }
         if (!is_uuid($uuid)) {
             throw new Exception(sprintf(
