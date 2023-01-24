@@ -100,7 +100,7 @@ msgid "Deduplicate"
 msgstr "Deduplicación"
 
 msgid "Delete"
-msgstr ""
+msgstr "Borrar"
 
 msgid "Docs"
 msgstr "Docs"
@@ -173,7 +173,7 @@ msgid "Restart pool"
 msgstr "Reiniciar el pool"
 
 msgid "Shared"
-msgstr ""
+msgstr "Compartido"
 
 msgid "Shared folders"
 msgstr "Carpetas compartidas"

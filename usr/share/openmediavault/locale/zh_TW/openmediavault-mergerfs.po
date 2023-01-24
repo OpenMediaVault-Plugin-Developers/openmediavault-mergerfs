@@ -100,7 +100,7 @@ msgid "Deduplicate"
 msgstr "去重複"
 
 msgid "Delete"
-msgstr ""
+msgstr "刪除"
 
 msgid "Docs"
 msgstr "文件"
@@ -169,7 +169,7 @@ msgid "Restart pool"
 msgstr "重啟集用場"
 
 msgid "Shared"
-msgstr ""
+msgstr "共享"
 
 msgid "Shared folders"
 msgstr "共享檔案夾"
