@@ -210,6 +210,8 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
             use ($params, $mntobj) {
                 $cmdArgs = [];
                 $cmdArgs[] = sprintf('mergerfs.%s', $params['command']);
+                $cmdArgs[] = "--exclude aquota.group";
+                $cmdArgs[] = "--exclude aquota.user";
                 switch($params['command']) {
                     case 'dedup':
                         if (!$params['practice']) {
