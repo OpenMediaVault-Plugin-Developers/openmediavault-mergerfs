@@ -114,7 +114,7 @@ data:
       - type: textInput
         name: options
         label: _("Options")
-        value: "defaults,allow_other,cache.files=off,use_ino"
+        value: "defaults,cache.files=off"
     buttons:
       - template: submit
         execute:

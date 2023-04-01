@@ -121,6 +121,11 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         }
         $pathsu = array_unique($paths);
         $params['paths'] = implode(':', $pathsu);
+        // remove noop options
+        $options = explode(',', $params['options']);
+        $optremove = ['nonempty','use_ino','allow_other'];
+        $options2 = array_diff($options, $optremove);
+        $params['options'] = implode(',', $options2);
         // Prepare the configuration object.
         $object = new \OMV\Config\ConfigObject("conf.service.mergerfs.pool");
         $object->setAssoc($params);
