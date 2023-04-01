@@ -1,3 +1,11 @@
+openmediavault-mergerfs (6.3.6) UNRELEASED; urgency=medium
+
+  * Require mergerfs 2.35 or newer
+  * Remove noop options - nonempty, use_ino, allow_other - that are automatic in mergerfs 2.35
+  * Update default options
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sat, 01 Apr 2023 11:23:07 -0500
+
 openmediavault-mergerfs (6.3.5) stable; urgency=low
 
   * Exclude aquota files from balance and dedupe
