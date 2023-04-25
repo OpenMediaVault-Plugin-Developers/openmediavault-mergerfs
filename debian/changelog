@@ -1,3 +1,9 @@
+openmediavault-mergerfs (6.3.7) stable; urgency=low
+
+  * Trim whitespace from options
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Tue, 25 Apr 2023 16:43:33 -0500
+
 openmediavault-mergerfs (6.3.6) stable; urgency=low
 
   * Require mergerfs 2.35 or newer
