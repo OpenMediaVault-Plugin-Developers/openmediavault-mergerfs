@@ -218,6 +218,13 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
                 $cmdArgs[] = sprintf('mergerfs.%s', $params['command']);
                 $cmdArgs[] = "--exclude aquota.group";
                 $cmdArgs[] = "--exclude aquota.user";
+                $cmdArgs[] = "--exclude snapraid.content";
+                $cmdArgs[] = "--exclude snapraid.parity";
+                $cmdArgs[] = "--exclude snapraid.2-parity";
+                $cmdArgs[] = "--exclude snapraid.3-parity";
+                $cmdArgs[] = "--exclude snapraid.4-parity";
+                $cmdArgs[] = "--exclude snapraid.5-parity";
+                $cmdArgs[] = "--exclude snapraid.6-parity";
                 switch($params['command']) {
                     case 'dedup':
                         if (!$params['practice']) {
