@@ -2,15 +2,15 @@ Source: openmediavault-mergerfs
 Section: net
 Priority: optional
 Maintainer: OpenMediaVault Plugin Developers <plugins@omv-extras.org>
-Build-Depends: debhelper (>= 12)
+Build-Depends: debhelper (>= 13)
 Standards-Version: 4.3.0
 XB-Plugin-Section: filesystems
 
 Package: openmediavault-mergerfs
 Architecture: all
 Depends: libarchive-zip-perl,
-         mergerfs (>= 2.35),
-         openmediavault (>= 6),
+         mergerfs (>= 2.37),
+         openmediavault (>= 7),
          ${misc:Depends}
 Replaces: omvextras-unionbackend,
           openmediavault-mergerfsfolders,
