@@ -64,8 +64,6 @@ data:
             method: restartPool
             params:
               uuid: "{{ _selected[0].uuid }}"
-            task: false
-            successUrl: /services/mergerfs
         enabledConstraints:
           minSelected: 1
           maxSelected: 1
