@@ -1,3 +1,9 @@
+openmediavault-mergerfs (6.3.8) stable; urgency=low
+
+  * Fix pool restart web interface issue
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Fri, 03 Nov 2023 11:51:01 -0500
+
 openmediavault-mergerfs (6.3.7) stable; urgency=low
 
   * Trim whitespace from options
