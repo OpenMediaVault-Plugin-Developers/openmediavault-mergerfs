@@ -33,7 +33,7 @@ data:
                 prop: namero
         validators:
           required: true
-          patternType: 'shareName'
+          patternType: wordChars
       - type: select
         name: filesystems
         label: _("Filesystems")
