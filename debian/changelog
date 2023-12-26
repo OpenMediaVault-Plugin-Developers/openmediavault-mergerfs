@@ -1,8 +1,8 @@
-openmediavault-mergerfs (7.0.2) UNRELEASED; urgency=medium
+openmediavault-mergerfs (7.0.2) stable; urgency=low
 
   * Preven multiple category.create options
 
- -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Tue, 26 Dec 2023 09:25:56 -0600
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Tue, 26 Dec 2023 15:48:11 -0600
 
 openmediavault-mergerfs (7.0.1) stable; urgency=low
 
