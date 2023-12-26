@@ -8,7 +8,9 @@
 {%- set _ = options.append('minfreespace=' ~ pool.minfreespace | string ~ pool.minfreespaceunit) %}
 {%- set _ = options.append('fsname=' ~ fsname) %}
 {%- for option in pool.options.split(',') %}
+{%- if not 'category.create=' in option %}
 {%- set _ = options.append(option) %}
+{%- endif %}
 {%- endfor %}
 {%- set branches = [] %}
 {%- set reqMnts = [] %}
