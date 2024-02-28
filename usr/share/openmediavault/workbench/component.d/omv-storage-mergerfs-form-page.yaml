@@ -12,6 +12,11 @@ data:
           uuid: "{{ _routeParams.uuid }}"
       post:
         method: set
+    hints:
+      - type: info
+        text: _("When editing a pool, a reboot may be necessary to apply changes.")
+        dismissible: true
+        stateId: 95c9ecf2-d631-11ee-9f12-6b2b39906d86
     fields:
       - type: confObjUuid
       - type: hidden
