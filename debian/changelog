@@ -1,3 +1,10 @@
+openmediavault-mergerfs (7.0.3) stable; urgency=low
+
+  * Add link to omv-extras wiki
+  * Add hint to pool form to reboot if editing pool
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Wed, 28 Feb 2024 06:10:43 -0600
+
 openmediavault-mergerfs (7.0.2) stable; urgency=low
 
   * Preven multiple category.create options
