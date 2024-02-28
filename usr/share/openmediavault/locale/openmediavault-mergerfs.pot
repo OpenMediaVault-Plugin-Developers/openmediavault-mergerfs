@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-26 15:50-0600\n"
+"POT-Creation-Date: 2024-02-28 06:12-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -179,6 +179,9 @@ msgstr ""
 msgid "Unit"
 msgstr ""
 
+msgid "When editing a pool, a reboot may be necessary to apply changes."
+msgstr ""
+
 msgid "When the minimum free space is reached on a filesystem it will not be written to unless all the other filesystem also has reached the limit."
 msgstr ""
 
@@ -189,4 +192,7 @@ msgid "mergerfs"
 msgstr ""
 
 msgid "mergerfs tools"
+msgstr ""
+
+msgid "omv-extras.org wiki"
 msgstr ""

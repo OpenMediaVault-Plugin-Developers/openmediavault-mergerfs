@@ -3,9 +3,6 @@
 # This file is distributed under the same license as the openmediavault-mergerfs package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
-# Translators:
-# kochin <kochinc@outlook.com>, 2022
-# 
 #, fuzzy
 msgid ""
 msgstr ""
@@ -13,175 +10,174 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-28 06:12-0600\n"
 "PO-Revision-Date: 2022-03-04 14:10+0000\n"
-"Last-Translator: kochin <kochinc@outlook.com>, 2022\n"
-"Language-Team: Chinese (Taiwan) (https://app.transifex.com/openmediavault-plugin-developers/teams/1854/zh_TW/)\n"
+"Language-Team: Basque (https://app.transifex.com/openmediavault-plugin-developers/teams/1854/eu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_TW\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: eu\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Balance pool"
-msgstr "平衡集用場"
+msgstr ""
 
 msgid "Balance pool ..."
-msgstr "平衡集用場 ..."
+msgstr ""
 
 msgid "Create"
-msgstr "新建"
+msgstr ""
 
 msgid "Create policy"
-msgstr "新建策略"
+msgstr ""
 
 msgid "Created pool."
-msgstr "已建立集用場。"
+msgstr ""
 
 msgid "Dedup largest"
-msgstr "去重複取最大"
+msgstr ""
 
 msgid "Dedup largest (practice)"
-msgstr "去重複取最大（演練）"
+msgstr ""
 
 msgid "Dedup most free space"
-msgstr "去重複取最多未用空間"
+msgstr ""
 
 msgid "Dedup most free space (practice)"
-msgstr "去重複取最多未用空間（演練）"
+msgstr ""
 
 msgid "Dedup newest"
-msgstr "去重複取最新"
+msgstr ""
 
 msgid "Dedup newest (practice)"
-msgstr "去重複取最新（演練）"
+msgstr ""
 
 msgid "Dedup oldest"
-msgstr "去重複取最舊"
+msgstr ""
 
 msgid "Dedup oldest (practice)"
-msgstr "去重複取最舊（演練）"
+msgstr ""
 
 msgid "Dedup pool - largest (practice) ..."
-msgstr "集用場去重複 - 取最大（演練）..."
+msgstr ""
 
 msgid "Dedup pool - largest ..."
-msgstr "集用場去重複 - 取最大 ..."
+msgstr ""
 
 msgid "Dedup pool - most free space (practice) ..."
-msgstr "集用場去重複 - 取最多未用空間（演練）..."
+msgstr ""
 
 msgid "Dedup pool - most free space ..."
-msgstr "集用場去重複 - 取最多未用空間 ..."
+msgstr ""
 
 msgid "Dedup pool - newest (practice) ..."
-msgstr "集用場去重複 - 取最新（演練）..."
+msgstr ""
 
 msgid "Dedup pool - newest ..."
-msgstr "集用場去重複 - 取最新 ..."
+msgstr ""
 
 msgid "Dedup pool - oldest (practice) ..."
-msgstr "集用場去重複 - 取最舊（演練）..."
+msgstr ""
 
 msgid "Dedup pool - oldest ..."
-msgstr "集用場去重複 - 取最舊 ..."
+msgstr ""
 
 msgid "Dedup pool - smallest (practice) ..."
-msgstr "集用場去重複 - 取最小（演練）..."
+msgstr ""
 
 msgid "Dedup pool - smallest ..."
-msgstr "集用場去重複 - 取最小 ..."
+msgstr ""
 
 msgid "Dedup smallest"
-msgstr "去重複取最小"
+msgstr ""
 
 msgid "Dedup smallest (practice)"
-msgstr "去重複取最小（演練）"
+msgstr ""
 
 msgid "Deduplicate"
-msgstr "去重複"
+msgstr ""
 
 msgid "Delete"
-msgstr "刪除"
+msgstr ""
 
 msgid "Docs"
-msgstr "文件"
+msgstr ""
 
 msgid "Edit"
-msgstr "編輯"
+msgstr ""
 
 msgid "Edit pool."
-msgstr "編輯集用場。"
+msgstr ""
 
 msgid "Enable"
-msgstr "啟用"
+msgstr ""
 
 msgid "Enabled"
-msgstr "已啟用"
+msgstr ""
 
 msgid "Filesystems"
-msgstr "檔案系統"
+msgstr ""
 
 msgid "Largest"
-msgstr "最大"
+msgstr ""
 
 msgid "Largest (practice)"
-msgstr "最大（演練）"
+msgstr ""
 
 msgid "Minimum free space"
-msgstr "最少未用空間"
+msgstr ""
 
 msgid "Most free space"
-msgstr "最多未用空間"
+msgstr ""
 
 msgid "Most free space (practice)"
-msgstr "最多未用空間（演練）"
+msgstr ""
 
 msgid "Name"
-msgstr "名稱"
+msgstr ""
 
 msgid "Newest"
-msgstr "最新"
+msgstr ""
 
 msgid "Newest (practice)"
-msgstr "最新（演練）"
+msgstr ""
 
 msgid "Oldest"
-msgstr "最舊"
+msgstr ""
 
 msgid "Oldest (practice)"
-msgstr "最舊（演練）"
+msgstr ""
 
 msgid "Optional. All filesystems will be converted to paths when saved."
-msgstr "選擇性。儲存後，所有檔案系統將被轉換成路徑。"
+msgstr ""
 
 msgid "Optional. All shared folders will be converted to paths when saved."
-msgstr "選擇性。儲存後，所有共享檔案夾將被轉換成路徑。"
+msgstr ""
 
 msgid "Options"
-msgstr "選項"
+msgstr ""
 
 msgid "Paths"
-msgstr "路徑"
+msgstr ""
 
 msgid "Put each folder on a new line."
-msgstr "將每一個檔案夾填在新的一行。"
+msgstr ""
 
 msgid "Restart pool"
-msgstr "重啟集用場"
+msgstr ""
 
 msgid "Shared"
-msgstr "共享"
+msgstr ""
 
 msgid "Shared folders"
-msgstr "共享檔案夾"
+msgstr ""
 
 msgid "Smallest"
-msgstr "最小"
+msgstr ""
 
 msgid "Smallest (practice)"
-msgstr "最小（演練）"
+msgstr ""
 
 msgid "Unit"
-msgstr "單位"
+msgstr ""
 
 msgid "When editing a pool, a reboot may be necessary to apply changes."
 msgstr ""
@@ -189,16 +185,16 @@ msgstr ""
 msgid ""
 "When the minimum free space is reached on a filesystem it will not be "
 "written to unless all the other filesystem also has reached the limit."
-msgstr "當一個檔案系統只剩下最少未用空間，它將不再被寫入，除非其他的檔案系統也都達到限制。"
+msgstr ""
 
 msgid "fstab"
-msgstr "fstab"
+msgstr ""
 
 msgid "mergerfs"
-msgstr "mergerfs"
+msgstr ""
 
 msgid "mergerfs tools"
-msgstr "mergerfs tools"
+msgstr ""
 
 msgid "omv-extras.org wiki"
 msgstr ""
