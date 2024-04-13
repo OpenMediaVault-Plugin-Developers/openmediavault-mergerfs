@@ -30,6 +30,7 @@ class OMVModuleMergerfs extends \OMV\Engine\Module\ServiceAbstract
     final public function onChange($type, $path, $object)
     {
         $this->setDirty();
+        $this->setDirtyByName("monit");
     }
 
     public function bindListeners(\OMV\Engine\Notify\Dispatcher $dispatcher)
