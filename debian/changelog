@@ -1,3 +1,9 @@
+openmediavault-mergerfs (7.0.4) stable; urgency=low
+
+  * Add monit monitoring for mounts and try to remount if not mounted
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sat, 13 Apr 2024 11:14:19 -0500
+
 openmediavault-mergerfs (7.0.3) stable; urgency=low
 
   * Add link to omv-extras wiki
