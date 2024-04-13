@@ -1,59 +1,84 @@
-[{
-	"type": "rpc",
-	"id": "rpc.mergerfs.set",
-	"params": {
-		"type": "object",
-		"properties": {
-			"uuid": {
-				"type": "string",
-				"format": "uuidv4",
-				"required": true
-			},
-			"name": {
-				"type": "string",
-				"required": true
-			},
-			"mntentref": {
-				"type": "string"
-			},
-			"usesf": {
-				"type": "boolean"
-			},
-			"sharedfolderrefs": {
-				"type": "string"
-			},
-			"filesystems": {
-				"type": "string"
-			},
-			"usepath": {
-				"type": "boolean"
-			},
-			"paths": {
-				"type": ["string","null"]
-			},
-			"createpolicy": {
-				"type": "string",
-				"enum": [
-					"all", "epall", "epff", "eplfs", "eplus",
-					"epmfs", "eppfrd", "eprand", "erofs", "ff",
-					"lfs", "lus", "mfs", "msplfs", "msplus",
-					"mspmfs", "msppfrd", "newest", "pfrd", "rand"
-				]
-			},
-			"minfreespace": {
-				"type": "integer",
-				"minimum": 1,
-				"maximum": 99999,
-				"required": true
-			},
-			"minfreespaceunit": {
-				"type": "string",
-				"enum": ["K", "M", "G"],
-				"required": true
-			},
-			"options": {
-				"type": "string"
-			}
-		}
-	}
-}]
+[
+  {
+    "type": "rpc",
+    "id": "rpc.mergerfs.set",
+    "params": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "format": "uuidv4",
+          "required": true
+        },
+        "name": {
+          "type": "string",
+          "required": true
+        },
+        "mntentref": {
+          "type": "string"
+        },
+        "usesf": {
+          "type": "boolean"
+        },
+        "sharedfolderrefs": {
+          "type": "string"
+        },
+        "filesystems": {
+          "type": "string"
+        },
+        "usepath": {
+          "type": "boolean"
+        },
+        "paths": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "createpolicy": {
+          "type": "string",
+          "enum": [
+            "all",
+            "epall",
+            "epff",
+            "eplfs",
+            "eplus",
+            "epmfs",
+            "eppfrd",
+            "eprand",
+            "erofs",
+            "ff",
+            "lfs",
+            "lus",
+            "mfs",
+            "msplfs",
+            "msplus",
+            "mspmfs",
+            "msppfrd",
+            "newest",
+            "pfrd",
+            "rand"
+          ]
+        },
+        "minfreespace": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 99999,
+          "required": true
+        },
+        "minfreespaceunit": {
+          "type": "string",
+          "enum": [
+            "K",
+            "M",
+            "G"
+          ],
+          "required": true
+        },
+        "options": {
+          "type": "string"
+        }
+      }
+    }
+  }
+]
