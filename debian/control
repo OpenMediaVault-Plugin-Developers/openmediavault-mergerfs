@@ -10,7 +10,7 @@ Package: openmediavault-mergerfs
 Architecture: all
 Depends: libarchive-zip-perl,
          mergerfs (>= 2.37),
-         openmediavault (>= 7),
+         openmediavault (>= 7.1),
          ${misc:Depends}
 Replaces: omvextras-unionbackend,
           openmediavault-mergerfsfolders,
