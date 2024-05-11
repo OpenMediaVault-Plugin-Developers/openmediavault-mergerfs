@@ -83,7 +83,7 @@ class Mergerfs extends UnionAbstract
     public static function extractUuidFromMountPoint($mountPoint)
     {
         $regex = '/[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}/';
-        $mountsFile = strpos($fsname, DIRECTORY_SEPARATOR) === 0 ? '/etc/fstab' : '/proc/mounts';
+        $mountsFile = '/proc/mounts';
 
         foreach (new SplFileObject($mountsFile) as $content) {
             $splitContent = preg_split('/\s+/', $content);
@@ -96,8 +96,7 @@ class Mergerfs extends UnionAbstract
             }
         }
         if (!is_uuid($uuid)) {
-            $units = '/etc/systemd/system/srv-mergerfs-*';
-            $args = sprintf('grep -B1 -h "%s" %s | awk -F":" \'/What/ { print $2 }\'', $mountPoint, $units);
+            $args = sprintf('systemctl cat "%s" | awk -F":" \'/What/ { print $2 }\'', $mountPoint);
             $cmd = new Process($args);
             $cmd->execute($output);
             $uuid = $output[0];
@@ -124,7 +123,7 @@ class Mergerfs extends UnionAbstract
      */
     private static function fetchMountPointFromFstabByFsnameAndType($fsname, $type)
     {
-        $mountsFile = strpos($fsname, DIRECTORY_SEPARATOR) === 0 ? '/etc/fstab' : '/proc/mounts';
+        $mountsFile = '/proc/mounts';
 
         foreach (new SplFileObject($mountsFile) as $content) {
             $splitContent = preg_split('/\s+/', $content);
