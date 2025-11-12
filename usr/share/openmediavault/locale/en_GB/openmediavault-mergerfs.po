@@ -4,16 +4,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Andi Chandler <andi@gowling.com>, 2023
+# Andi Chandler <andi@gowling.com>, 2024
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-28 06:12-0600\n"
+"POT-Creation-Date: 2025-11-12 22:24+0000\n"
 "PO-Revision-Date: 2022-03-04 14:10+0000\n"
-"Last-Translator: Andi Chandler <andi@gowling.com>, 2023\n"
+"Last-Translator: Andi Chandler <andi@gowling.com>, 2024\n"
 "Language-Team: English (United Kingdom) (https://app.transifex.com/openmediavault-plugin-developers/teams/1854/en_GB/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -35,30 +35,6 @@ msgstr "Create policy"
 
 msgid "Created pool."
 msgstr "Created pool."
-
-msgid "Dedup largest"
-msgstr "Dedup largest"
-
-msgid "Dedup largest (practice)"
-msgstr "Dedup largest (practice)"
-
-msgid "Dedup most free space"
-msgstr "Dedup most free space"
-
-msgid "Dedup most free space (practice)"
-msgstr "Dedup most free space (practice)"
-
-msgid "Dedup newest"
-msgstr "Dedup newest"
-
-msgid "Dedup newest (practice)"
-msgstr "Dedup newest (practice)"
-
-msgid "Dedup oldest"
-msgstr "Dedup oldest"
-
-msgid "Dedup oldest (practice)"
-msgstr "Dedup oldest (practice)"
 
 msgid "Dedup pool - largest (practice) ..."
 msgstr "Dedup pool - largest (practice) ..."
@@ -90,12 +66,6 @@ msgstr "Dedup pool - smallest (practice) ..."
 msgid "Dedup pool - smallest ..."
 msgstr "Dedup pool - smallest ..."
 
-msgid "Dedup smallest"
-msgstr "Dedup smallest"
-
-msgid "Dedup smallest (practice)"
-msgstr "Dedup smallest (practice)"
-
 msgid "Deduplicate"
 msgstr "Deduplicate"
 
@@ -110,12 +80,6 @@ msgstr "Edit"
 
 msgid "Edit pool."
 msgstr "Edit pool."
-
-msgid "Enable"
-msgstr "Enable"
-
-msgid "Enabled"
-msgstr "Enabled"
 
 msgid "Filesystems"
 msgstr "Filesystems"
@@ -184,7 +148,7 @@ msgid "Unit"
 msgstr "Unit"
 
 msgid "When editing a pool, a reboot may be necessary to apply changes."
-msgstr ""
+msgstr "When editing a pool, a reboot may be necessary to apply changes."
 
 msgid ""
 "When the minimum free space is reached on a filesystem it will not be "
@@ -193,9 +157,6 @@ msgstr ""
 "When the minimum free space is reached on a filesystem it will not be "
 "written to unless all the other filesystem also has reached the limit."
 
-msgid "fstab"
-msgstr "fstab"
-
 msgid "mergerfs"
 msgstr "mergerfs"
 
@@ -203,4 +164,4 @@ msgid "mergerfs tools"
 msgstr "mergerfs tools"
 
 msgid "omv-extras.org wiki"
-msgstr ""
+msgstr "omv-extras.org wiki"

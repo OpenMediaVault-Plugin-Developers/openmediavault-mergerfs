@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-28 06:12-0600\n"
+"POT-Creation-Date: 2025-11-12 22:24+0000\n"
 "PO-Revision-Date: 2022-03-04 14:10+0000\n"
 "Last-Translator: Dampflok_HD, 2023\n"
 "Language-Team: German (Germany) (https://app.transifex.com/openmediavault-plugin-developers/teams/1854/de_DE/)\n"
@@ -34,30 +34,6 @@ msgid "Create policy"
 msgstr "Richtlinie erstellen"
 
 msgid "Created pool."
-msgstr ""
-
-msgid "Dedup largest"
-msgstr ""
-
-msgid "Dedup largest (practice)"
-msgstr ""
-
-msgid "Dedup most free space"
-msgstr ""
-
-msgid "Dedup most free space (practice)"
-msgstr ""
-
-msgid "Dedup newest"
-msgstr ""
-
-msgid "Dedup newest (practice)"
-msgstr ""
-
-msgid "Dedup oldest"
-msgstr ""
-
-msgid "Dedup oldest (practice)"
 msgstr ""
 
 msgid "Dedup pool - largest (practice) ..."
@@ -90,12 +66,6 @@ msgstr ""
 msgid "Dedup pool - smallest ..."
 msgstr ""
 
-msgid "Dedup smallest"
-msgstr ""
-
-msgid "Dedup smallest (practice)"
-msgstr ""
-
 msgid "Deduplicate"
 msgstr ""
 
@@ -110,12 +80,6 @@ msgstr "Bearbeiten"
 
 msgid "Edit pool."
 msgstr ""
-
-msgid "Enable"
-msgstr "Aktivieren"
-
-msgid "Enabled"
-msgstr "Aktiviert"
 
 msgid "Filesystems"
 msgstr "Dateisysteme"
@@ -190,9 +154,6 @@ msgid ""
 "When the minimum free space is reached on a filesystem it will not be "
 "written to unless all the other filesystem also has reached the limit."
 msgstr ""
-
-msgid "fstab"
-msgstr "fstab"
 
 msgid "mergerfs"
 msgstr "mergerfs"

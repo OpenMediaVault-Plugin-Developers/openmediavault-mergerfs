@@ -4,16 +4,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Raul Fernandez Garcia <raulfg3@gmail.com>, 2022
+# Raul Fernandez Garcia <raulfg3@gmail.com>, 2024
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-28 06:12-0600\n"
+"POT-Creation-Date: 2025-11-12 22:24+0000\n"
 "PO-Revision-Date: 2022-03-04 14:10+0000\n"
-"Last-Translator: Raul Fernandez Garcia <raulfg3@gmail.com>, 2022\n"
+"Last-Translator: Raul Fernandez Garcia <raulfg3@gmail.com>, 2024\n"
 "Language-Team: Spanish (Spain) (https://app.transifex.com/openmediavault-plugin-developers/teams/1854/es_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -35,30 +35,6 @@ msgstr "Política de creación"
 
 msgid "Created pool."
 msgstr "Pool creado."
-
-msgid "Dedup largest"
-msgstr "Deduplicación más grande"
-
-msgid "Dedup largest (practice)"
-msgstr "Deduplicación más grande (prueba)"
-
-msgid "Dedup most free space"
-msgstr "Deduplicación mayor espacio libre"
-
-msgid "Dedup most free space (practice)"
-msgstr "Deduplicación mayor espacio libre (prueba)"
-
-msgid "Dedup newest"
-msgstr "Deduplicación mas nuevo"
-
-msgid "Dedup newest (practice)"
-msgstr "Deduplicación mas nuevo (prueba)"
-
-msgid "Dedup oldest"
-msgstr "Deduplicación mas viejo"
-
-msgid "Dedup oldest (practice)"
-msgstr "Deduplicación mas viejo (prueba)"
 
 msgid "Dedup pool - largest (practice) ..."
 msgstr "Deduplicación mas grande (prueba) ..."
@@ -90,12 +66,6 @@ msgstr "Deduplicación más pequeño (prueba) ..."
 msgid "Dedup pool - smallest ..."
 msgstr "Deduplicación más pequeño ..."
 
-msgid "Dedup smallest"
-msgstr "Deduplicación más pequeño"
-
-msgid "Dedup smallest (practice)"
-msgstr "Deduplicación más pequeño (prueba)"
-
 msgid "Deduplicate"
 msgstr "Deduplicación"
 
@@ -110,12 +80,6 @@ msgstr "Editar"
 
 msgid "Edit pool."
 msgstr "Editar pool."
-
-msgid "Enable"
-msgstr "Habilitar"
-
-msgid "Enabled"
-msgstr "Habilitado"
 
 msgid "Filesystems"
 msgstr "Sistema de Archivos"
@@ -189,6 +153,7 @@ msgstr "Unidad"
 
 msgid "When editing a pool, a reboot may be necessary to apply changes."
 msgstr ""
+"Cuando se edita un pool, es necesario reiniciar, para aplicar los cambios."
 
 msgid ""
 "When the minimum free space is reached on a filesystem it will not be "
@@ -198,9 +163,6 @@ msgstr ""
 "escribirá a menos que todos los demás sistemas de archivos también hayan "
 "alcanzado el límite."
 
-msgid "fstab"
-msgstr "fstab"
-
 msgid "mergerfs"
 msgstr "mergerfs"
 
@@ -208,4 +170,4 @@ msgid "mergerfs tools"
 msgstr "Herramientas mergerfs "
 
 msgid "omv-extras.org wiki"
-msgstr ""
+msgstr "omv-extras.org wiki"
