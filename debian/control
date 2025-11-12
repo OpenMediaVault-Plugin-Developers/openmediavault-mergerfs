@@ -9,11 +9,8 @@ XB-Plugin-Section: filesystems
 Package: openmediavault-mergerfs
 Architecture: all
 Depends: libarchive-zip-perl,
-         mergerfs (>= 2.37),
-         openmediavault (>= 7.1),
+         mergerfs (>= 2.41),
+         openmediavault (>= 8),
          ${misc:Depends}
-Replaces: omvextras-unionbackend,
-          openmediavault-mergerfsfolders,
-          openmediavault-unionfilesystems
 Description: mergerfs plugin for openmediavault.
  Makes it possible to pool folders under a single mountpoint with mergerfs.
