@@ -73,9 +73,10 @@ data:
       - type: select
         name: createpolicy
         label: _("Create policy")
-        value: "epmfs"
+        value: "pfrd"
         store:
           data:
+            - ['all', _('All')]
             - ['epall', _('Existing path - all')]
             - ['epff', _('Existing path - first found')]
             - ['eplfs', _('Existing path - least free space')]
@@ -83,7 +84,6 @@ data:
             - ['epmfs', _('Existing path - most free space')]
             - ['eppfrd', _('Existing path - percentage free random distribution')]
             - ['eprand', _('Existing path - random')]
-            - ['erofs', _('Read-only')]
             - ['ff', _('First found')]
             - ['lfs', _('Least free space')]
             - ['lus', _('Least used space')]
