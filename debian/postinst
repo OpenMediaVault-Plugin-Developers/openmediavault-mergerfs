@@ -9,6 +9,10 @@ case "$1" in
         # Activate package triggers.
         dpkg-trigger update-workbench
 
+        # Remove files renamed in prior versions.
+        rm -f /usr/share/php/openmediavault/system/filesystem/union.inc
+        rm -f /usr/share/php/openmediavault/system/filesystem/backend/unionabstract.inc
+
         # Create the default configuration.
         echo "Updating configuration database ..."
         omv-confdbadm create "conf.service.mergerfs"

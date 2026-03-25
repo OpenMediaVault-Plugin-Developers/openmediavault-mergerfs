@@ -17,17 +17,17 @@
         "mntentref": {
           "type": "string"
         },
-        "usesf": {
-          "type": "boolean"
-        },
         "sharedfolderrefs": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "filesystems": {
-          "type": "string"
-        },
-        "usepath": {
-          "type": "boolean"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "paths": {
           "type": [

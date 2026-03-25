@@ -1,6 +1,4 @@
 {%- set poolmount = salt['omv_conf.get']('conf.system.filesystem.mountpoint', pool.mntentref) %}
-{%- set mountdir = salt['pillar.get']('default:OMV_MOUNT_DIR', '/srv') %}
-{%- set shortdir = mountdir ~ '/mfs' %}
 {%- set mntDir = poolmount.dir %}
 {%- set fsname = pool.name ~ ':' ~ pool.uuid %}
 {%- set options = [] %}

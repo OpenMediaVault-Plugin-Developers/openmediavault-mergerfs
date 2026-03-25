@@ -54,7 +54,7 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
             $paths = str_replace([',',':', PHP_EOL], '<br />', $objectv->get("paths"));
             $objectv->add("pathsa", "string", $paths);
             $mntentref = $objectv->get("mntentref");
-	        $sfobjects = $db->get("conf.system.sharedfolder");
+            $sfobjects = $db->get("conf.system.sharedfolder");
             $inuse = false;
             foreach ($sfobjects as $sfobject) {
                 $sfmntentref = $sfobject->get("mntentref");
@@ -217,6 +217,10 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         // Create the background process.
         return $this->execBgProc(function($bgStatusFilename, $bgOutputFilename)
             use ($params, $mntobj) {
+                $allowed = ['balance', 'dedup'];
+                if (!in_array($params['command'], $allowed, true)) {
+                    throw new \OMV\Exception('Invalid command "%s".', $params['command']);
+                }
                 $cmdArgs = [];
                 $cmdArgs[] = sprintf('mergerfs.%s', $params['command']);
                 $cmdArgs[] = "--exclude aquota.group";

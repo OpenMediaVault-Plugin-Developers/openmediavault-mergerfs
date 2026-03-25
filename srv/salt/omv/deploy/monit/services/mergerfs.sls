@@ -6,7 +6,7 @@
 
 {% set mountpoints = salt['omv_conf.get_by_filter'](
   'conf.system.filesystem.mountpoint',
-  {"operator": "stringEquals", "arg0": "type", "arg1": "mergerfs"}) %}
+  {"operator": "stringEquals", "arg0": "type", "arg1": "fuse.mergerfs"}) %}
 
 configure_monit_mergerfs_service:
   file.managed:

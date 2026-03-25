@@ -21,7 +21,6 @@
 {% set mountdir = salt['pillar.get']('default:OMV_MOUNT_DIR', '/srv') %}
 {% set pooldir = mountdir ~ '/mergerfs' %}
 {% set pooldiresc = salt['cmd.run']('systemd-escape --path ' ~ pooldir) %}
-{% set shortdir = mountdir ~ '/mfs' %}
 
 configure_pool_dir:
   file.directory:
