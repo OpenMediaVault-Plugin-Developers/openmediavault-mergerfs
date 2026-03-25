@@ -36,7 +36,7 @@ remove_mergerfs_mount_files_{{ mountsdir }}:
 
 systemd_remove_dead_symlinks:
   cmd.run:
-    - name: find /etc/systemd/system/multi-user.target.wants -xtype l -print -delete
+    - name: find /etc/systemd/system/multi-user.target.wants -name "srv-mergerfs-*.mount" -xtype l -print -delete
 
 {% for pool in config.pools.pool %}
 {% if pool.mntentref | length == 36 %}
