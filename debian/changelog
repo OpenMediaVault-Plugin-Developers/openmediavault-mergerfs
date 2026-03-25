@@ -1,3 +1,9 @@
+openmediavault-mergerfs (8.0.1) stable; urgency=low
+
+  * Code cleanup
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Wed, 25 Mar 2026 20:53:55 +0000
+
 openmediavault-mergerfs (8.0) stable; urgency=low
 
   * Update for omv 8
