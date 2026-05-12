@@ -9,7 +9,7 @@ XB-Plugin-Section: filesystems
 Package: openmediavault-mergerfs
 Architecture: all
 Depends: libarchive-zip-perl,
-         mergerfs (>= 2.41),
+         mergerfs (>= 2.42),
          openmediavault (>= 8),
          ${misc:Depends}
 Description: mergerfs plugin for openmediavault.
