@@ -59,8 +59,13 @@ class Mergerfs implements FilesystemInterface, SharedFolderCandidateInterface
 
     public function getDescription()
     {
+        if (!$this->isMounted()) {
+            return $this->getLabel();
+        }
         $statistics = $this->getStatistics();
-
+        if ($statistics === false) {
+            return $this->getLabel();
+        }
         return sprintf(
             '%s [%s (%d%%) used, %s available]',
             $this->getLabel(),
@@ -134,6 +139,7 @@ class Mergerfs implements FilesystemInterface, SharedFolderCandidateInterface
     {
         $cmd = new \OMV\System\Process('df', '-PT', escapeshellarg($this->mountPoint));
         $cmd->setRedirect2to1();
+        $cmd->setQuiet(true);
         $cmd->execute($output);
 
         $result = false;

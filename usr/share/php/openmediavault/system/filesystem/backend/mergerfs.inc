@@ -105,13 +105,53 @@ class Mergerfs extends BackendAbstract
                 }
             }
 
-            $uuid = self::extractUuidFromMountPoint($mountPoint);
+            // Primary: look up the pool UUID from the database by matching
+            // the configured mount directory. Works for unmounted pools that
+            // have never been deployed and have no systemd unit file yet.
+            $uuid = $this->findUuidByMountDir($mountPoint);
+
+            // Fallback: extract UUID from an active mount or systemd unit file.
+            if (empty($uuid)) {
+                $uuid = self::extractUuidFromMountPoint($mountPoint);
+            }
         }
 
         $object = $this->database->get($this->dataModelPath, $uuid);
         $mountPointObject = $this->database->get($this->mountPointDataModelPath, $object->get('mntentref'));
 
         return new \OMV\System\Filesystem\Mergerfs($object->get('uuid'), $mountPointObject->get('dir'), $object->get('name'), $this);
+    }
+
+    private function findUuidByMountDir($mountPoint)
+    {
+        try {
+            $objects = $this->database->get($this->dataModelPath);
+        } catch (\OMV\Exception $e) {
+            return '';
+        }
+        foreach ($objects as $object) {
+            try {
+                $mountEntry = $this->database->get(
+                    $this->mountPointDataModelPath,
+                    $object->get('mntentref')
+                );
+                $mntDir = $mountEntry->get('dir');
+                // Exact match: args is the pool mount directory itself.
+                if ($mntDir === $mountPoint) {
+                    return $object->get('uuid');
+                }
+                // Prefix match: args is a sub-path inside the pool (e.g. a
+                // bind-mount source created by another plugin). The trailing
+                // slash prevents false matches between /srv/mergerfs/pool1 and
+                // /srv/mergerfs/pool10.
+                if (strpos($mountPoint, rtrim($mntDir, '/') . '/') === 0) {
+                    return $object->get('uuid');
+                }
+            } catch (\OMV\Exception $e) {
+                continue;
+            }
+        }
+        return '';
     }
 
     public static function extractUuidFromMountPoint($mountPoint)
