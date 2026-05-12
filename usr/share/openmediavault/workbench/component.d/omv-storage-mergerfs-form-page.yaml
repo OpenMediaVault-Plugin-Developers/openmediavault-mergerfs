@@ -86,6 +86,7 @@ data:
             - ['eprand', _('Existing path - random')]
             - ['ff', _('First found')]
             - ['lfs', _('Least free space')]
+            - ['lup', _('Least used percentage')]
             - ['lus', _('Least used space')]
             - ['mfs', _('Most free space')]
             - ['msplfs', _('Most shared path - least free space')]
