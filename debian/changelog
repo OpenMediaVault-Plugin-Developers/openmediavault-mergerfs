@@ -1,3 +1,10 @@
+openmediavault-mergerfs (8.0.2) stable; urgency=low
+
+  * Add lup policy
+  * Improve backend
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Tue, 12 May 2026 13:07:44 +0000
+
 openmediavault-mergerfs (8.0.1) stable; urgency=low
 
   * Code cleanup
