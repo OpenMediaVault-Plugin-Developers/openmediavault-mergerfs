@@ -3,13 +3,17 @@
 # This file is distributed under the same license as the openmediavault-mergerfs package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
+# Translators:
+# BoneNI, 2026
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-12 22:24+0000\n"
+"POT-Creation-Date: 2026-05-30 16:15+0000\n"
 "PO-Revision-Date: 2022-03-04 14:10+0000\n"
+"Last-Translator: BoneNI, 2026\n"
 "Language-Team: Lao (Laos) (https://app.transifex.com/openmediavault-plugin-developers/teams/1854/lo_LA/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,144 +22,177 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 msgid "Balance pool"
-msgstr ""
+msgstr "ປັບສົມດຸນພູລ"
 
 msgid "Balance pool ..."
-msgstr ""
+msgstr "ປັບສົມດຸນພູລ ..."
 
 msgid "Create"
-msgstr ""
+msgstr "ສ້າງ"
 
 msgid "Create policy"
-msgstr ""
+msgstr "ສ້າງນະໂຍບາຍ"
 
 msgid "Created pool."
-msgstr ""
+msgstr "ສ້າງພູລສຳເລັດແລ້ວ."
 
 msgid "Dedup pool - largest (practice) ..."
-msgstr ""
+msgstr "ລຶບຂໍ້ມູນຊ້ຳໃນພູລ - ໃຫຍ່ທີ່ສຸດ (ທົດລອງ) ..."
 
 msgid "Dedup pool - largest ..."
-msgstr ""
+msgstr "ລຶບຂໍ້ມູນຊ້ຳໃນພູລ - ໃຫຍ່ທີ່ສຸດ ..."
 
 msgid "Dedup pool - most free space (practice) ..."
-msgstr ""
+msgstr "ລຶບຂໍ້ມູນຊ້ຳໃນພູລ - ພື້ນທີ່ວ່າງຫຼາຍທີ່ສຸດ (ທົດລອງ) ..."
 
 msgid "Dedup pool - most free space ..."
-msgstr ""
+msgstr "ລຶບຂໍ້ມູນຊ້ຳໃນພູລ - ພື້ນທີ່ວ່າງຫຼາຍທີ່ສຸດ ..."
 
 msgid "Dedup pool - newest (practice) ..."
-msgstr ""
+msgstr "ລຶບຂໍ້ມູນຊ້ຳໃນພູລ - ໃໝ່ທີ່ສຸດ (ທົດລອງ) ..."
 
 msgid "Dedup pool - newest ..."
-msgstr ""
+msgstr "ລຶບຂໍ້ມູນຊ້ຳໃນພູລ - ໃໝ່ທີ່ສຸດ ..."
 
 msgid "Dedup pool - oldest (practice) ..."
-msgstr ""
+msgstr "ລຶບຂໍ້ມູນຊ້ຳໃນພູລ - ເກົ່າທີ່ສຸດ (ທົດລອງ) ..."
 
 msgid "Dedup pool - oldest ..."
-msgstr ""
+msgstr "ລຶບຂໍ້ມູນຊ້ຳໃນພູລ - ເກົ່າທີ່ສຸດ ..."
 
 msgid "Dedup pool - smallest (practice) ..."
-msgstr ""
+msgstr "ລຶບຂໍ້ມູນຊ້ຳໃນພູລ - ນ້ອຍທີ່ສຸດ (ທົດລອງ) ..."
 
 msgid "Dedup pool - smallest ..."
-msgstr ""
+msgstr "ລຶບຂໍ້ມູນຊ້ຳໃນພູລ - ນ້ອຍທີ່ສຸດ ..."
 
 msgid "Deduplicate"
-msgstr ""
+msgstr "ລຶບຂໍ້ມູນຊ້ຳ"
 
 msgid "Delete"
+msgstr "ລຶບ"
+
+msgid "Delete source files after successful copy"
 msgstr ""
 
 msgid "Docs"
-msgstr ""
+msgstr "ເອກະສານ"
 
 msgid "Edit"
-msgstr ""
+msgstr "ແກ້ໄຂ"
 
 msgid "Edit pool."
-msgstr ""
+msgstr "ແກ້ໄຂພູລ."
 
 msgid "Filesystems"
-msgstr ""
+msgstr "ລະບົບໄຟລ໌"
 
 msgid "Largest"
-msgstr ""
+msgstr "ໃຫຍ່ທີ່ສຸດ"
 
 msgid "Largest (practice)"
-msgstr ""
+msgstr "ໃຫຍ່ທີ່ສຸດ (ທົດລອງ)"
 
 msgid "Minimum free space"
-msgstr ""
+msgstr "ພື້ນທີ່ວ່າງຕ່ຳສຸດ"
 
 msgid "Most free space"
-msgstr ""
+msgstr "ພື້ນທີ່ວ່າງຫຼາຍທີ່ສຸດ"
 
 msgid "Most free space (practice)"
-msgstr ""
+msgstr "ພື້ນທີ່ວ່າງຫຼາຍທີ່ສຸດ (ທົດລອງ)"
 
 msgid "Name"
-msgstr ""
+msgstr "ຊື່"
 
 msgid "Newest"
-msgstr ""
+msgstr "ໃໝ່ທີ່ສຸດ"
 
 msgid "Newest (practice)"
-msgstr ""
+msgstr "ໃໝ່ທີ່ສຸດ (ທົດລອງ)"
 
 msgid "Oldest"
-msgstr ""
+msgstr "ເກົ່າທີ່ສຸດ"
 
 msgid "Oldest (practice)"
-msgstr ""
+msgstr "ເກົ່າທີ່ສຸດ (ທົດລອງ)"
 
 msgid "Optional. All filesystems will be converted to paths when saved."
-msgstr ""
+msgstr "ທາງເລືອກ. ລະບົບໄຟລ໌ທັງໝົດຈະຖືກປ່ຽນເປັນເສັ້ນທາງ (path) ເມື່ອບັນທຶກ."
 
 msgid "Optional. All shared folders will be converted to paths when saved."
 msgstr ""
+"ທາງເລືອກ. ໂຟນເດີທີ່ແບ່ງປັນທັງໝົດຈະຖືກປ່ຽນເປັນເສັ້ນທາງ (path) ເມື່ອບັນທຶກ."
 
 msgid "Options"
+msgstr "ທາງເລືອກ"
+
+msgid "Path"
 msgstr ""
 
 msgid "Paths"
-msgstr ""
+msgstr "ເສັ້ນທາງ"
 
 msgid "Put each folder on a new line."
+msgstr "ໃສ່ແຕ່ລະໂຟນເດີໄວ້ໃນແຖວໃໝ່."
+
+msgid "Remove and migrate"
+msgstr ""
+
+msgid "Remove path"
+msgstr ""
+
+msgid "Remove path from pool ..."
+msgstr ""
+
+msgid "Removing path and migrating data ..."
 msgstr ""
 
 msgid "Restart pool"
-msgstr ""
+msgstr "ເລີ່ມຕົ້ນພູລໃໝ່"
 
 msgid "Shared"
-msgstr ""
+msgstr "ແບ່ງປັນ"
 
 msgid "Shared folders"
-msgstr ""
+msgstr "ໂຟນເດີທີ່ແບ່ງປັນ"
 
 msgid "Smallest"
-msgstr ""
+msgstr "ນ້ອຍທີ່ສຸດ"
 
 msgid "Smallest (practice)"
+msgstr "ນ້ອຍທີ່ສຸດ (ທົດລອງ)"
+
+msgid ""
+"The selected path is removed from the pool and its data is copied back into "
+"the pool, where mergerfs redistributes it across the remaining branches."
 msgstr ""
 
 msgid "Unit"
-msgstr ""
+msgstr "ຫົວໜ່ວຍ"
 
 msgid "When editing a pool, a reboot may be necessary to apply changes."
+msgstr ""
+"ເມື່ອແກ້ໄຂພູລ, ອາດຈຳເປັນຕ້ອງໄດ້ເລີ່ມຕົ້ນລະບົບໃໝ່ (reboot) "
+"ເເພື່ອນຳໃຊ້ການປ່ຽນແປງ."
+
+msgid ""
+"When enabled, files are removed from the detached disk once they have been "
+"copied into the pool."
 msgstr ""
 
 msgid ""
 "When the minimum free space is reached on a filesystem it will not be "
 "written to unless all the other filesystem also has reached the limit."
 msgstr ""
+"ເມື່ອພື້ນທີ່ວ່າງຕ່ຳສຸດໃນລະບົບໄຟລ໌ໃດໜຶ່ງເຕັມແລ້ວ, "
+"ມັນຈະບໍ່ຖືກຂຽນຂໍ້ມູນລົງໄປຕື່ມ ຈົນກວ່າລະບົບໄຟລ໌ອື່ນໆທັງໝົດຈະຮອດຂີດຈຳກັດຄືກັນ."
 
 msgid "mergerfs"
-msgstr ""
+msgstr "mergerfs"
 
 msgid "mergerfs tools"
-msgstr ""
+msgstr "ເຄື່ອງມື mergerfs"
 
 msgid "omv-extras.org wiki"
-msgstr ""
+msgstr "ວິກິ omv-extras.org"

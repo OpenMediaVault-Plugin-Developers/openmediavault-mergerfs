@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-12 22:24+0000\n"
+"POT-Creation-Date: 2026-05-30 16:15+0000\n"
 "PO-Revision-Date: 2022-03-04 14:10+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>, 2024\n"
 "Language-Team: English (United Kingdom) (https://app.transifex.com/openmediavault-plugin-developers/teams/1854/en_GB/)\n"
@@ -72,6 +72,9 @@ msgstr "Deduplicate"
 msgid "Delete"
 msgstr "Delete"
 
+msgid "Delete source files after successful copy"
+msgstr ""
+
 msgid "Docs"
 msgstr "Docs"
 
@@ -123,11 +126,26 @@ msgstr "Optional. All shared folders will be converted to paths when saved."
 msgid "Options"
 msgstr "Options"
 
+msgid "Path"
+msgstr ""
+
 msgid "Paths"
 msgstr "Paths"
 
 msgid "Put each folder on a new line."
 msgstr "Put each folder on a new line."
+
+msgid "Remove and migrate"
+msgstr ""
+
+msgid "Remove path"
+msgstr ""
+
+msgid "Remove path from pool ..."
+msgstr ""
+
+msgid "Removing path and migrating data ..."
+msgstr ""
 
 msgid "Restart pool"
 msgstr "Restart pool"
@@ -144,11 +162,21 @@ msgstr "Smallest"
 msgid "Smallest (practice)"
 msgstr "Smallest (practice)"
 
+msgid ""
+"The selected path is removed from the pool and its data is copied back into "
+"the pool, where mergerfs redistributes it across the remaining branches."
+msgstr ""
+
 msgid "Unit"
 msgstr "Unit"
 
 msgid "When editing a pool, a reboot may be necessary to apply changes."
 msgstr "When editing a pool, a reboot may be necessary to apply changes."
+
+msgid ""
+"When enabled, files are removed from the detached disk once they have been "
+"copied into the pool."
+msgstr ""
 
 msgid ""
 "When the minimum free space is reached on a filesystem it will not be "

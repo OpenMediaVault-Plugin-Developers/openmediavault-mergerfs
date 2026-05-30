@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-12 22:24+0000\n"
+"POT-Creation-Date: 2026-05-30 16:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,6 +68,9 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+msgid "Delete source files after successful copy"
+msgstr ""
+
 msgid "Docs"
 msgstr ""
 
@@ -119,10 +122,25 @@ msgstr ""
 msgid "Options"
 msgstr ""
 
+msgid "Path"
+msgstr ""
+
 msgid "Paths"
 msgstr ""
 
 msgid "Put each folder on a new line."
+msgstr ""
+
+msgid "Remove and migrate"
+msgstr ""
+
+msgid "Remove path"
+msgstr ""
+
+msgid "Remove path from pool ..."
+msgstr ""
+
+msgid "Removing path and migrating data ..."
 msgstr ""
 
 msgid "Restart pool"
@@ -140,10 +158,16 @@ msgstr ""
 msgid "Smallest (practice)"
 msgstr ""
 
+msgid "The selected path is removed from the pool and its data is copied back into the pool, where mergerfs redistributes it across the remaining branches."
+msgstr ""
+
 msgid "Unit"
 msgstr ""
 
 msgid "When editing a pool, a reboot may be necessary to apply changes."
+msgstr ""
+
+msgid "When enabled, files are removed from the detached disk once they have been copied into the pool."
 msgstr ""
 
 msgid "When the minimum free space is reached on a filesystem it will not be written to unless all the other filesystem also has reached the limit."
