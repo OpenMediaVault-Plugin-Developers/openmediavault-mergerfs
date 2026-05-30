@@ -58,7 +58,7 @@ configure_mergerfs_{{ poolname }}:
     - template: jinja
     - user: root
     - group: root
-    - mode: "0644"
+    - mode: '0644'
 
 systemd-reload_{{ poolname }}:
   cmd.run:

@@ -18,6 +18,6 @@ configure_monit_mergerfs_service:
         mountpoints: {{ mountpoints | json }}
     - user: root
     - group: root
-    - mode: 644
+    - mode: '0644'
 
 {% endif %}
