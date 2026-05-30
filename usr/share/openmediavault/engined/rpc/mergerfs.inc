@@ -37,6 +37,8 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
 
         $this->registerMethod("restartPool");
         $this->registerMethod("toolsCommand");
+        $this->registerMethod("getPoolPaths");
+        $this->registerMethod("removePath");
     }
 
     public function getList($params, $context)
@@ -53,6 +55,11 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         foreach ($objects as $objectk => &$objectv) {
             $paths = str_replace([',',':', PHP_EOL], '<br />', $objectv->get("paths"));
             $objectv->add("pathsa", "string", $paths);
+            $pathList = array_filter(
+                explode(':', $objectv->get("paths")),
+                function($p) { return strlen($p) > 2; }
+            );
+            $objectv->add("pathcount", "integer", count($pathList));
             $mntentref = $objectv->get("mntentref");
             $sfobjects = $db->get("conf.system.sharedfolder");
             $inuse = false;
@@ -189,11 +196,24 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         $db = \OMV\Config\Database::getInstance();
         $poolobj = $db->get("conf.service.mergerfs.pool", $params['uuid']);
         $mntobj = $db->get("conf.system.filesystem.mountpoint", $poolobj->get('mntentref'));
+        $this->restartPoolMount($mntobj->get('dir'));
+    }
+
+    private function isMounted($dir)
+    {
+        $cmd = new \OMV\System\Process('mountpoint', ['-q', escapeshellarg($dir)]);
+        $cmd->setQuiet(true);
+        $cmd->execute($output, $exitStatus);
+        return 0 === $exitStatus;
+    }
+
+    private function restartPoolMount($dir)
+    {
         // get escaped systemd mount
         $cmdArgs = [];
         $cmdArgs[] = '--path';
         $cmdArgs[] = '--suffix=mount';
-        $cmdArgs[] = $mntobj->get('dir');
+        $cmdArgs[] = $dir;
         $output = [];
         $cmd = new \OMV\System\Process('systemd-escape', $cmdArgs);
         $cmd->execute($output, $exitStatus);
@@ -244,6 +264,153 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
                         break;
                 }
                 $cmdArgs[] = $mntobj->get('dir');
+                $cmd = new \OMV\System\Process($cmdArgs);
+                if (0 !== ($exitStatus = $this->exec($cmd->getCommandLine(), $output, $bgOutputFilename))) {
+                    throw new \OMV\ExecException($cmd->getCommandLine(), $output, $exitStatus);
+                }
+                return $output;
+            }
+        );
+    }
+
+    public function getPoolPaths($params, $context)
+    {
+        // Validate the RPC caller context.
+        $this->validateMethodContext($context, ['role' => OMV_ROLE_ADMINISTRATOR]);
+        // Validate the parameters of the RPC service method.
+        $this->validateMethodParams($params, "rpc.common.objectuuid");
+        // Get the configuration object.
+        $db = \OMV\Config\Database::getInstance();
+        $poolobj = $db->get("conf.service.mergerfs.pool", $params['uuid']);
+        $result = [];
+        foreach (explode(':', $poolobj->get('paths')) as $path) {
+            if (strlen($path) > 2) {
+                $result[] = ['path' => $path];
+            }
+        }
+        return $result;
+    }
+
+    public function removePath($params, $context)
+    {
+        // Validate the RPC caller context.
+        $this->validateMethodContext($context, ['role' => OMV_ROLE_ADMINISTRATOR]);
+        // convert boolean string to boolean
+        if (isset($params['deletesource'])) {
+            $params['deletesource'] = filter_var($params['deletesource'], FILTER_VALIDATE_BOOLEAN);
+        }
+        // Validate the parameters of the RPC service method.
+        $this->validateMethodParams($params, "rpc.mergerfs.removepath");
+        // Get the configuration object.
+        $db = \OMV\Config\Database::getInstance();
+        $poolobj = $db->get("conf.service.mergerfs.pool", $params['uuid']);
+        $mntobj = $db->get("conf.system.filesystem.mountpoint", $poolobj->get('mntentref'));
+        $mntDir = $mntobj->get('dir');
+        // Determine the current branch paths and the ones that remain after
+        // the requested path is removed.
+        $paths = array_values(array_filter(
+            explode(':', $poolobj->get('paths')),
+            function($p) { return strlen($p) > 2; }
+        ));
+        $removePath = $params['path'];
+        if (!in_array($removePath, $paths, true)) {
+            throw new \OMV\Exception(
+                'The path "%s" is not part of this pool.', $removePath);
+        }
+        $remaining = array_values(array_diff($paths, [$removePath]));
+        if (count($remaining) < 1) {
+            throw new \OMV\Exception(
+                'Refusing to remove the last remaining path of the pool.');
+        }
+        // Create the background process.
+        return $this->execBgProc(function($bgStatusFilename, $bgOutputFilename)
+            use ($params, $context, $poolobj, $db, $mntDir, $removePath, $remaining) {
+                // Make sure the data on the branch being removed fits into the
+                // free space of the remaining branches before changing anything.
+                $usedBytes = 0;
+                $cmd = new \OMV\System\Process('du', ['-sb', escapeshellarg($removePath)]);
+                $cmd->setQuiet(true);
+                $cmd->execute($output);
+                if (isset($output[0])) {
+                    $usedBytes = intval(strtok($output[0], "\t "));
+                }
+                $freeBytes = 0;
+                foreach ($remaining as $branch) {
+                    $avail = @disk_free_space($branch);
+                    if (false !== $avail) {
+                        $freeBytes += $avail;
+                    }
+                }
+                if ($usedBytes > $freeBytes) {
+                    throw new \OMV\Exception(
+                        'Not enough free space on the remaining branches to '.
+                        'migrate the data (need %d bytes, have %d bytes).',
+                        $usedBytes, $freeBytes);
+                }
+                $poolobj->set('paths', implode(':', $remaining));
+                $db->set($poolobj);
+                $this->writeBgProcOutput($bgOutputFilename,
+                    sprintf("Removing path '%s' from pool and applying changes ...\n",
+                    $removePath));
+                \OMV\Rpc\Rpc::call('Config', 'applyChanges', [
+                    'modules' => ['mergerfs', 'monit'],
+                    'force' => true
+                ], $context);
+                // Drop the branch from the live mount.
+                $dropped = false;
+                if ($this->isMounted($mntDir)) {
+                    $cmd = new \OMV\System\Process('setfattr', [
+                        '-n', 'user.mergerfs.branches',
+                        '-v', escapeshellarg(sprintf('-%s', $removePath)),
+                        escapeshellarg(sprintf('%s/.mergerfs', rtrim($mntDir, '/')))
+                    ]);
+                    $cmd->setQuiet(true);
+                    $cmd->execute($output, $exitStatus);
+                    if (0 === $exitStatus) {
+                        $dropped = true;
+                        $this->writeBgProcOutput($bgOutputFilename,
+                            "Dropped branch from the live mount via the mergerfs ".
+                            "runtime control (no remount).\n");
+                    }
+                }
+                // Fallback: restart the mount unit so it picks up the new branch list
+                if (!$dropped) {
+                    $this->writeBgProcOutput($bgOutputFilename,
+                        "Restarting pool mount to apply the branch removal ...\n");
+                    $this->restartPoolMount($mntDir);
+                    $mounted = false;
+                    for ($i = 0; $i < 15; $i++) {
+                        if ($this->isMounted($mntDir)) {
+                            $mounted = true;
+                            break;
+                        }
+                        sleep(1);
+                    }
+                    if (!$mounted) {
+                        throw new \OMV\Exception(
+                            'The pool mount "%s" did not become active after '.
+                            'restart; aborting before data migration.', $mntDir);
+                    }
+                }
+                // Copy the data from the removed branch into the pool mount so
+                // mergerfs redistributes it across the remaining branches.
+                $this->writeBgProcOutput($bgOutputFilename,
+                    sprintf("Migrating data from '%s' into the pool ...\n", $removePath));
+                $cmdArgs = [];
+                $cmdArgs[] = 'rsync';
+                $cmdArgs[] = '-aHAX';
+                $cmdArgs[] = '--info=progress2';
+                $cmdArgs[] = '-v';
+                if ($params['deletesource']) {
+                    $cmdArgs[] = '--remove-source-files';
+                }
+                $cmdArgs[] = '--exclude=aquota.group';
+                $cmdArgs[] = '--exclude=aquota.user';
+                $cmdArgs[] = '--exclude=snapraid.content';
+                $cmdArgs[] = '--exclude=snapraid.parity';
+                $cmdArgs[] = '--exclude=snapraid.*-parity';
+                $cmdArgs[] = escapeshellarg(sprintf('%s/', rtrim($removePath, '/')));
+                $cmdArgs[] = escapeshellarg(sprintf('%s/', rtrim($mntDir, '/')));
                 $cmd = new \OMV\System\Process($cmdArgs);
                 if (0 !== ($exitStatus = $this->exec($cmd->getCommandLine(), $output, $bgOutputFilename))) {
                     throw new \OMV\ExecException($cmd->getCommandLine(), $output, $exitStatus);

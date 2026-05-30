@@ -68,6 +68,61 @@ data:
           minSelected: 1
           maxSelected: 1
       - type: iconButton
+        tooltip: _("Remove path")
+        icon: mdi:folder-remove
+        execute:
+          type: formDialog
+          formDialog:
+            title: _("Remove path from pool ...")
+            fields:
+              - type: select
+                name: path
+                label: _("Path")
+                hint: _("The selected path is removed from the pool and its data is copied back into the pool, where mergerfs redistributes it across the remaining branches.")
+                store:
+                  proxy:
+                    service: Mergerfs
+                    get:
+                      method: getPoolPaths
+                      params:
+                        uuid: "{{ _selected[0].uuid }}"
+                valueField: path
+                textField: path
+                validators:
+                  required: true
+              - type: checkbox
+                name: deletesource
+                label: _("Delete source files after successful copy")
+                hint: _("When enabled, files are removed from the detached disk once they have been copied into the pool.")
+                value: false
+              - type: hidden
+                name: uuid
+                value: "{{ _selected[0].uuid }}"
+            buttons:
+              submit:
+                text: _("Remove and migrate")
+                execute:
+                  type: taskDialog
+                  taskDialog:
+                    config:
+                      title: _("Removing path and migrating data ...")
+                      startOnInit: true
+                      request:
+                        service: Mergerfs
+                        method: removePath
+                        params:
+                          uuid: "{{ uuid }}"
+                          path: "{{ path }}"
+                          deletesource: "{{ deletesource | toboolean }}"
+        enabledConstraints:
+          minSelected: 1
+          maxSelected: 1
+          constraint:
+            - operator: ">"
+              arg0:
+                prop: pathcount
+              arg1: 1
+      - type: iconButton
         tooltip: _("Balance pool")
         icon: mdi:scale-balance
         execute:

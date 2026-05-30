@@ -80,5 +80,27 @@
         }
       }
     }
+  },
+  {
+    "type": "rpc",
+    "id": "rpc.mergerfs.removepath",
+    "params": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "format": "uuidv4",
+          "required": true
+        },
+        "path": {
+          "type": "string",
+          "required": true
+        },
+        "deletesource": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
   }
 ]
