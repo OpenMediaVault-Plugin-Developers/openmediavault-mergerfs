@@ -1,16 +1,11 @@
-openmediavault-mergerfs (8.0.3) stable; urgency=low
-
-  * Add "Remove path" action to remove a branch from a pool and migrate its
-    data back into the pool
-
- -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sat, 30 May 2026 00:00:00 +0000
-
 openmediavault-mergerfs (8.0.2) stable; urgency=low
 
   * Add lup policy
   * Improve backend
+  * Add "Remove path" action to remove a branch from a pool and migrate its
+    data back into the pool
 
- -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Tue, 12 May 2026 13:07:44 +0000
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sat, 30 May 2026 16:26:25 +0000
 
 openmediavault-mergerfs (8.0.1) stable; urgency=low
 
