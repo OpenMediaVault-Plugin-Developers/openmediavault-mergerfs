@@ -1,3 +1,12 @@
+openmediavault-mergerfs (8.0.3) stable; urgency=low
+
+  * Allow dashes and dots in pool names
+  * Fix pool restart/mount failing for pool names containing dashes
+  * Fix "Remove path" aborting branch removal on an unrelated monit
+    redeploy failure
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sat, 29 Aug 2026 13:42:23 +0000
+
 openmediavault-mergerfs (8.0.2) stable; urgency=low
 
   * Add lup policy
