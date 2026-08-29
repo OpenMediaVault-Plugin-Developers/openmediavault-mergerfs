@@ -38,7 +38,9 @@ data:
                 prop: namero
         validators:
           required: true
-          patternType: wordChars
+          pattern:
+            pattern: "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
+            errorData: _("Only alphanumeric characters, underscores, dots and dashes are allowed. The name cannot start with a dot or dash.")
       - type: select
         name: filesystems
         label: _("Filesystems")

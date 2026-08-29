@@ -213,14 +213,14 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
         $cmdArgs = [];
         $cmdArgs[] = '--path';
         $cmdArgs[] = '--suffix=mount';
-        $cmdArgs[] = $dir;
+        $cmdArgs[] = escapeshellarg($dir);
         $output = [];
         $cmd = new \OMV\System\Process('systemd-escape', $cmdArgs);
         $cmd->execute($output, $exitStatus);
         // restart systemd mount
         $cmdArgs = [];
         $cmdArgs[] = 'restart';
-        $cmdArgs[] = $output[0];
+        $cmdArgs[] = escapeshellarg($output[0]);
         $output = [];
         $cmd = new \OMV\System\Process('systemctl', $cmdArgs);
         $cmd->execute($output, $exitStatus);
@@ -353,7 +353,7 @@ class OMVRpcServiceMergerfs extends \OMV\Rpc\ServiceAbstract
                     sprintf("Removing path '%s' from pool and applying changes ...\n",
                     $removePath));
                 \OMV\Rpc\Rpc::call('Config', 'applyChanges', [
-                    'modules' => ['mergerfs', 'monit'],
+                    'modules' => ['mergerfs'],
                     'force' => true
                 ], $context);
                 // Drop the branch from the live mount.

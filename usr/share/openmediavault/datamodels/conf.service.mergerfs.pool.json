@@ -14,7 +14,8 @@
     },
     "name": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$"
     },
     "mntentref": {
       "type": "string"

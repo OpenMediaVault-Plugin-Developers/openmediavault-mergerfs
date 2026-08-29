@@ -20,7 +20,7 @@
 {% set symlinksdir = mountsdir ~ '/multi-user.target.wants' %}
 {% set mountdir = salt['pillar.get']('default:OMV_MOUNT_DIR', '/srv') %}
 {% set pooldir = mountdir ~ '/mergerfs' %}
-{% set pooldiresc = salt['cmd.run']('systemd-escape --path ' ~ pooldir) %}
+{% set pooldiresc = salt['cmd.run']("systemd-escape --path '" ~ pooldir ~ "'") %}
 
 configure_pool_dir:
   file.directory:
@@ -45,7 +45,7 @@ systemd_remove_dead_symlinks:
 {% set pooldir = poolmount.dir %}
 {% set poolname = pool.name %}
 
-{% set unitname = salt['cmd.run']('systemd-escape --path --suffix=mount ' ~ pooldir) %}
+{% set unitname = salt['cmd.run']("systemd-escape --path --suffix=mount '" ~ pooldir ~ "'") %}
 {% set mountunit =  mountsdir ~ "/" ~ unitname %}
 
 configure_mergerfs_{{ poolname }}:
@@ -73,7 +73,7 @@ enable_{{ poolname }}_mergerfs:
 
 restart_{{ poolname }}_mergerfs:
   cmd.run:
-    - name: systemctl restart {{ unitname }}
+    - name: systemctl restart '{{ unitname }}'
 
 {% endif %}
 
