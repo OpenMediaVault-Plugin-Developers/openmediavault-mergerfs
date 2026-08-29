@@ -104,6 +104,20 @@ for p in data:
 " 2>/dev/null
 }
 
+# Print a background job's final status/output (or the exception it failed
+# with) for diagnostics. $1 is the raw JSON string returned by an execBgProc
+# RPC (e.g. removePath) — a quoted bgStatusFilename.
+dump_bgproc() {
+    local raw=$1 filename
+    filename=$(echo "$raw" | python3 -c "import sys,json; print(json.load(sys.stdin))" 2>/dev/null || echo "")
+    if [ -z "$filename" ]; then
+        info "dump_bgproc — could not parse bg status filename from: ${raw:0:200}"
+        return 1
+    fi
+    info "Background job output ($filename):"
+    rpc "Exec" "getOutput" "{\"filename\":\"$filename\",\"pos\":0}" 2>&1 | head -80 >&2
+}
+
 # ---------------------------------------------------------------------------
 # State
 # ---------------------------------------------------------------------------
@@ -118,6 +132,12 @@ B2A=""
 B2B=""
 B2C=""
 
+# Third pool used to confirm a dash/dot pool name mounts correctly despite
+# systemd's \x2d-escaping of literal dashes in generated unit names.
+POOL3_UUID=""
+B3A=""
+B3B=""
+
 LIST_PARAMS='{"start":0,"limit":null,"sortfield":null,"sortdir":null}'
 OMV_NEW_UUID=$(. /etc/default/openmediavault 2>/dev/null; \
     echo "${OMV_CONFIGOBJECT_NEW_UUID:-fa4b1c66-ef79-11e5-87a0-0002b3a176b4}")
@@ -131,6 +151,10 @@ MNT1="${OMV_MOUNT_DIR}/mergerfs/${POOL_NAME}"
 
 POOL2_NAME="mgtestpool2"
 MNT2="${OMV_MOUNT_DIR}/mergerfs/${POOL2_NAME}"
+
+# Deliberately contains dashes and a dot to exercise systemd's \x2d escaping.
+POOL3_NAME="mg-test-dash.pool"
+MNT3="${OMV_MOUNT_DIR}/mergerfs/${POOL3_NAME}"
 
 # ---------------------------------------------------------------------------
 # Cleanup — always runs on exit
@@ -155,6 +179,7 @@ cleanup() {
     # Stop pool mounts if still active
     stop_pool_mount "$MNT1"
     stop_pool_mount "$MNT2"
+    stop_pool_mount "$MNT3"
 
     # Delete integration-test pools from DB
     if [ -n "$POOL1_UUID" ]; then
@@ -164,6 +189,10 @@ cleanup() {
     if [ -n "$POOL2_UUID" ]; then
         info "Deleting pool $POOL2_UUID from DB"
         rpc "Mergerfs" "delete" "{\"uuid\":\"$POOL2_UUID\"}" &>/dev/null || true
+    fi
+    if [ -n "$POOL3_UUID" ]; then
+        info "Deleting pool $POOL3_UUID from DB"
+        rpc "Mergerfs" "delete" "{\"uuid\":\"$POOL3_UUID\"}" &>/dev/null || true
     fi
 
     # Redeploy to remove generated systemd unit files
@@ -176,6 +205,8 @@ cleanup() {
     [ -n "$B2A" ] && rm -rf "$B2A" 2>/dev/null || true
     [ -n "$B2B" ] && rm -rf "$B2B" 2>/dev/null || true
     [ -n "$B2C" ] && rm -rf "$B2C" 2>/dev/null || true
+    [ -n "$B3A" ] && rm -rf "$B3A" 2>/dev/null || true
+    [ -n "$B3B" ] && rm -rf "$B3B" 2>/dev/null || true
     [ -n "$SALT_LOG" ] && rm -f "$SALT_LOG" 2>/dev/null || true
 
     info "Done."
@@ -345,6 +376,59 @@ import json; print(json.dumps({
     'paths': '/tmp/mgtestbadub1\n/tmp/mgtestbadub2',
     'sharedfolderrefs': [], 'filesystems': [],
     'createpolicy': 'pfrd', 'minfreespace': 4, 'minfreespaceunit': 'T',
+    'options': '',
+}))")"
+
+section "Validation — pool name pattern (dashes/dots allowed, unsafe chars rejected)"
+
+# Dashes and dots are allowed anywhere except as the first character.
+crud_test "mg-test.pattern-ok" "$(python3 -c "
+import json; print(json.dumps({
+    'uuid': '$OMV_NEW_UUID', 'mntentref': '$OMV_NEW_UUID',
+    'name': 'mg-test.pattern-ok',
+    'paths': '/tmp/mgtestpatternb1\n/tmp/mgtestpatternb2',
+    'sharedfolderrefs': [], 'filesystems': [],
+    'createpolicy': 'pfrd', 'minfreespace': 4, 'minfreespaceunit': 'G',
+    'options': '',
+}))")"
+
+assert_rpc_fails "set — name starting with dash rejected" "Mergerfs" "set" "$(python3 -c "
+import json; print(json.dumps({
+    'uuid': '$OMV_NEW_UUID', 'mntentref': '$OMV_NEW_UUID',
+    'name': '-badname',
+    'paths': '/tmp/mgtestbadnameb1\n/tmp/mgtestbadnameb2',
+    'sharedfolderrefs': [], 'filesystems': [],
+    'createpolicy': 'pfrd', 'minfreespace': 4, 'minfreespaceunit': 'G',
+    'options': '',
+}))")"
+
+assert_rpc_fails "set — name starting with dot rejected" "Mergerfs" "set" "$(python3 -c "
+import json; print(json.dumps({
+    'uuid': '$OMV_NEW_UUID', 'mntentref': '$OMV_NEW_UUID',
+    'name': '.badname',
+    'paths': '/tmp/mgtestbadnameb1\n/tmp/mgtestbadnameb2',
+    'sharedfolderrefs': [], 'filesystems': [],
+    'createpolicy': 'pfrd', 'minfreespace': 4, 'minfreespaceunit': 'G',
+    'options': '',
+}))")"
+
+assert_rpc_fails "set — name containing slash rejected" "Mergerfs" "set" "$(python3 -c "
+import json; print(json.dumps({
+    'uuid': '$OMV_NEW_UUID', 'mntentref': '$OMV_NEW_UUID',
+    'name': 'bad/name',
+    'paths': '/tmp/mgtestbadnameb1\n/tmp/mgtestbadnameb2',
+    'sharedfolderrefs': [], 'filesystems': [],
+    'createpolicy': 'pfrd', 'minfreespace': 4, 'minfreespaceunit': 'G',
+    'options': '',
+}))")"
+
+assert_rpc_fails "set — name containing space rejected" "Mergerfs" "set" "$(python3 -c "
+import json; print(json.dumps({
+    'uuid': '$OMV_NEW_UUID', 'mntentref': '$OMV_NEW_UUID',
+    'name': 'bad name',
+    'paths': '/tmp/mgtestbadnameb1\n/tmp/mgtestbadnameb2',
+    'sharedfolderrefs': [], 'filesystems': [],
+    'createpolicy': 'pfrd', 'minfreespace': 4, 'minfreespaceunit': 'G',
     'options': '',
 }))")"
 
@@ -667,8 +751,8 @@ if mountpoint -q "$MNT1" 2>/dev/null; then
     # Ensure BRANCH2 has a uniquely named file to track migration.
     echo "migrate me" > "$BRANCH2/mgtestmigrate.txt"
 
-    assert_rpc "removePath — background job dispatched" "Mergerfs" "removePath" \
-        "{\"uuid\":\"$POOL1_UUID\",\"path\":\"$BRANCH2\",\"deletesource\":false}" >/dev/null || true
+    RP1_JOB=$(assert_rpc "removePath — background job dispatched" "Mergerfs" "removePath" \
+        "{\"uuid\":\"$POOL1_UUID\",\"path\":\"$BRANCH2\",\"deletesource\":false}") || true
 
     # The branch removal + salt deploy + restart + rsync run in the background.
     info "Waiting for removePath background job to migrate data (up to 60 s) ..."
@@ -685,6 +769,7 @@ if mountpoint -q "$MNT1" 2>/dev/null; then
         _pass "removePath — BRANCH2 data migrated onto remaining branch (BRANCH1)"
     else
         _fail "removePath — migrated file not found on BRANCH1 after 60 s"
+        dump_bgproc "$RP1_JOB"
     fi
 
     # Config must no longer list BRANCH2 as a branch.
@@ -868,9 +953,9 @@ else
                 _fail "fallback — could not unmount $POOL2_NAME; skipping"
             else
                 _pass "fallback — $POOL2_NAME unmounted before removePath"
-                assert_rpc "removePath (branch B, pool unmounted) — job dispatched" \
+                FB_JOB=$(assert_rpc "removePath (branch B, pool unmounted) — job dispatched" \
                     "Mergerfs" "removePath" \
-                    "{\"uuid\":\"$POOL2_UUID\",\"path\":\"$B2B\",\"deletesource\":false}" >/dev/null
+                    "{\"uuid\":\"$POOL2_UUID\",\"path\":\"$B2B\",\"deletesource\":false}") || true
 
                 info "Waiting for pool to remount and migrate (up to 120 s) ..."
                 FB_OK=false
@@ -888,6 +973,9 @@ else
                     _pass "fallback — pool remounted, branch B removed, data migrated to A"
                 else
                     _fail "fallback — remount/migration did not complete after 120 s"
+                    dump_bgproc "$FB_JOB"
+                    info "mountpoint state: $(mountpoint "$MNT2" 2>&1)"
+                    info "pool still has B2B: $(pool_has_path "$POOL2_UUID" "$B2B" && echo yes || echo no)"
                 fi
 
                 # Every file still readable through the pool with identical content.
@@ -900,6 +988,110 @@ else
             fi
         else
             _fail "fallback — preconditions not met (branch B missing or pool unmounted)"
+        fi
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+# Integration — pool name containing dashes/dots: confirm saltstack renders
+# the state, systemd escapes the mount unit correctly (\x2d for each literal
+# dash), and the pool actually mounts and serves files end to end.
+# ---------------------------------------------------------------------------
+section "Integration — pool name with dashes (saltstack + systemd escaping)"
+
+B3A=$(mktemp -d); B3B=$(mktemp -d)
+echo "dash pool branch A" > "$B3A/seed_a.txt"
+echo "dash pool branch B" > "$B3B/seed_b.txt"
+_pass "pool3 branch directories created: $B3A, $B3B"
+
+RESULT3=$(assert_rpc "set ($POOL3_NAME)" "Mergerfs" "set" "$(python3 -c "
+import json; print(json.dumps({
+    'uuid': '$OMV_NEW_UUID', 'mntentref': '$OMV_NEW_UUID',
+    'name': '$POOL3_NAME',
+    'paths': '${B3A}\n${B3B}',
+    'sharedfolderrefs': [], 'filesystems': [],
+    'createpolicy': 'mfs', 'minfreespace': 4, 'minfreespaceunit': 'G',
+    'options': 'defaults,cache.files=off',
+}))")") || true
+
+POOL3_UUID=$(echo "$RESULT3" | python3 -c \
+    "import sys,json; print(json.load(sys.stdin).get('uuid',''))" 2>/dev/null || echo "")
+
+if [ -z "$POOL3_UUID" ] || [ "$POOL3_UUID" = "$OMV_NEW_UUID" ]; then
+    _fail "dash-name — failed to create $POOL3_NAME; skipping"
+else
+    # The expected systemd escaping: each literal "-" becomes "\x2d" and "."
+    # is left unescaped (systemd's escape table treats '.' as safe).
+    UNIT3=$(systemd-escape --path --suffix=mount "$MNT3" 2>/dev/null || echo "")
+    if [[ "$UNIT3" == *'\x2d'* ]]; then
+        _pass "systemd-escape produces \\x2d-escaped unit name: $UNIT3"
+    else
+        _fail "systemd-escape did not escape dashes as expected" "got: $UNIT3"
+    fi
+
+    info "Running omv-salt deploy run mergerfs (dash-name pool) ..."
+    if omv-salt deploy run mergerfs &>/dev/null; then
+        _pass "omv-salt deploy — dash-name pool (no exception)"
+    else
+        _fail "omv-salt deploy — dash-name pool"
+    fi
+
+    UNIT3_FILE="/etc/systemd/system/${UNIT3}"
+    if [ -f "$UNIT3_FILE" ]; then
+        _pass "unit file created: $UNIT3_FILE"
+    else
+        _fail "unit file missing: $UNIT3_FILE"
+    fi
+
+    # If salt didn't start the mount, try once manually via systemctl.
+    if ! mountpoint -q "$MNT3" 2>/dev/null && [ -f "$UNIT3_FILE" ]; then
+        info "Mount not active after salt — attempting manual systemctl start ..."
+        systemctl daemon-reload 2>/dev/null || true
+        systemctl start "$UNIT3" 2>/dev/null || true
+        sleep 3
+    fi
+
+    info "Waiting for dash-name pool to mount (up to 30 s) ..."
+    for i in $(seq 1 15); do
+        mountpoint -q "$MNT3" 2>/dev/null && break
+        sleep 2
+    done
+
+    if mountpoint -q "$MNT3" 2>/dev/null; then
+        _pass "$POOL3_NAME mounted at $MNT3"
+
+        if [ -f "$MNT3/seed_a.txt" ] && [ -f "$MNT3/seed_b.txt" ]; then
+            _pass "merged view shows files from both branches"
+        else
+            _fail "merged view missing seed file(s)" "$(ls -la "$MNT3" 2>&1)"
+        fi
+
+        echo "written through dash-name pool" > "$MNT3/dashwrite.txt"
+        if [ -f "$B3A/dashwrite.txt" ] || [ -f "$B3B/dashwrite.txt" ]; then
+            _pass "write through dash-name pool landed on a branch"
+        else
+            _fail "write through dash-name pool did not appear on any branch"
+        fi
+
+        # restartPool RPC exercises the same salt render + systemctl restart
+        # path used by the UI's restart action, again with the dashed name.
+        assert_rpc "restartPool — dash-name pool, no exception" "Mergerfs" "restartPool" \
+            "{\"uuid\":\"$POOL3_UUID\"}" >/dev/null
+        info "Waiting for dash-name pool to remount after restart (up to 20 s) ..."
+        for i in $(seq 1 10); do
+            mountpoint -q "$MNT3" 2>/dev/null && break
+            sleep 2
+        done
+        if mountpoint -q "$MNT3" 2>/dev/null; then
+            _pass "dash-name pool remounted after restartPool"
+        else
+            _fail "dash-name pool not remounted after restartPool"
+        fi
+    else
+        _fail "$POOL3_NAME not mounted at $MNT3 after 30 s"
+        if [ -n "$UNIT3" ]; then
+            info "Journal for $UNIT3 (last 20 lines):"
+            journalctl -u "$UNIT3" -n 20 --no-pager 2>/dev/null >&2 || true
         fi
     fi
 fi
