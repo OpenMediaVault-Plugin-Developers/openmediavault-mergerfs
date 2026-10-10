@@ -57,7 +57,7 @@ assert_rpc() {
         _fail "$desc" "$(echo "$out" | tail -3)"
         return 1
     fi
-    if [ -n "$pattern" ] && ! echo "$out" | grep -q "$pattern"; then
+    if [ -n "$pattern" ] && ! grep -q "$pattern" <<< "$out"; then
         _fail "$desc" "Pattern '$pattern' not found in: ${out:0:200}"
         return 1
     fi
@@ -70,7 +70,7 @@ assert_rpc_fails() {
     local desc=$1 svc=$2 method=$3 params=${4:-'{}'}
     local out ec=0
     out=$(omv-rpc -u admin "$svc" "$method" "$params" 2>&1) || ec=$?
-    if [ $ec -eq 0 ] && ! echo "$out" | grep -qi "exception"; then
+    if [ $ec -eq 0 ] && ! grep -qi "exception" <<< "$out"; then
         _fail "$desc" "Expected failure but RPC succeeded: ${out:0:200}"
         return 1
     fi
@@ -172,6 +172,25 @@ d = {
 }
 d.update(json.loads(os.environ['POOL_EXTRA_ENV']))
 print(json.dumps({k: v for k, v in d.items() if v is not None}))"
+}
+
+# Build a payload the way the workbench UI does (see tests/ui_payloads.py).
+ui_payload() {
+    OMV_NEW_UUID=$OMV_NEW_UUID python3 "$(dirname "$(readlink -f "$0")")/ui_payloads.py" "$@"
+}
+
+# Expect an RPC to fail with an error message matching the given pattern
+# (used to check that a call gets past parameter validation).
+assert_rpc_error() {
+    local desc=$1 svc=$2 method=$3 params=$4 pattern=$5
+    local out ec=0
+    out=$(omv-rpc -u admin "$svc" "$method" "$params" 2>&1) || ec=$?
+    if grep -q "$pattern" <<< "$out"; then
+        _pass "$desc"
+        return 0
+    fi
+    _fail "$desc" "expected error matching '$pattern', got: ${out:0:300}"
+    return 1
 }
 
 # Echo the "uuid" field of an RPC JSON result.
@@ -659,25 +678,6 @@ else
     _fail "get — stored paths wrong" "got: ${STORED_PATHS:0:200}"
 fi
 
-# Edit an existing pool the way the UI form does: it submits what get
-# returned (minus namero) with the empty multi-selects as null.
-EDIT_PARAMS=$(echo "$GET_RESULT" | python3 -c "
-import sys, json
-d = json.load(sys.stdin)
-d.pop('namero', None)
-d['sharedfolderrefs'] = None
-d['filesystems'] = None
-print(json.dumps(d))" 2>/dev/null || echo "{}")
-assert_rpc "set — edit existing pool with null multi-selects (UI form)" \
-    "Mergerfs" "set" "$EDIT_PARAMS" "\"uuid\":\"$POOL1_UUID\"" >/dev/null
-EDITED_PATHS=$(rpc "Mergerfs" "get" "{\"uuid\":\"$POOL1_UUID\"}" 2>/dev/null | python3 -c \
-    "import sys,json; print(json.load(sys.stdin).get('paths',''))" 2>/dev/null || echo "")
-if [ "$EDITED_PATHS" = "$STORED_PATHS" ]; then
-    _pass "set — paths unchanged after editing existing pool"
-else
-    _fail "set — paths changed by editing existing pool" "got: ${EDITED_PATHS:0:200}"
-fi
-
 # Three paths with a duplicate and padding: every path must survive intact
 # and in order (guards against the last entry being overwritten).
 ORDER_RESULT=$(rpc "Mergerfs" "set" "$(pool_params "mgtestorder" \
@@ -695,6 +695,43 @@ if [ -n "$ORDER_UUID" ] && [ "$ORDER_UUID" != "$OMV_NEW_UUID" ]; then
     rpc "Mergerfs" "delete" "{\"uuid\":\"$ORDER_UUID\"}" &>/dev/null || true
 else
     _fail "set — order test pool could not be created" "${ORDER_RESULT:0:200}"
+fi
+
+# ---------------------------------------------------------------------------
+# UI contract — create and edit forms
+# Payloads are built from the form YAML by ui_payloads.py, so they contain
+# exactly the fields (and null values) the workbench UI submits.
+# ---------------------------------------------------------------------------
+section "UI contract — create and edit forms"
+
+for multi in null empty; do
+    UI_NAME="mgtestuiform${multi}"
+    UI_RESULT=$(assert_rpc "UI create form — pickers sent as $multi" "Mergerfs" "set" \
+        "$(ui_payload form create --name "$UI_NAME" \
+            --paths "/tmp/${UI_NAME}b1"$'\n'"/tmp/${UI_NAME}b2" --multi "$multi")") || continue
+    UI_UUID=$(echo "$UI_RESULT" | json_uuid)
+    UI_GET=$(rpc "Mergerfs" "get" "{\"uuid\":\"$UI_UUID\"}" 2>/dev/null || echo "{}")
+    assert_rpc "UI edit form — save unchanged pool (pickers sent as null)" "Mergerfs" "set" \
+        "$(echo "$UI_GET" | ui_payload form edit)" "\"uuid\":\"$UI_UUID\"" >/dev/null
+    UI_PATHS=$(rpc "Mergerfs" "get" "{\"uuid\":\"$UI_UUID\"}" 2>/dev/null | python3 -c \
+        "import sys,json; print(':'.join(json.load(sys.stdin).get('paths','').splitlines()))" 2>/dev/null)
+    if [ "$UI_PATHS" = "/tmp/${UI_NAME}b1:/tmp/${UI_NAME}b2" ]; then
+        _pass "UI forms — paths intact after create and edit"
+    else
+        _fail "UI forms — paths changed" "got: $UI_PATHS"
+    fi
+    rpc "Mergerfs" "delete" "{\"uuid\":\"$UI_UUID\"}" &>/dev/null || true
+done
+
+# Editing the integration pool through the edit form must not change it.
+assert_rpc "UI edit form — save $POOL_NAME unchanged" "Mergerfs" "set" \
+    "$(echo "$GET_RESULT" | ui_payload form edit)" "\"uuid\":\"$POOL1_UUID\"" >/dev/null
+EDITED_PATHS=$(rpc "Mergerfs" "get" "{\"uuid\":\"$POOL1_UUID\"}" 2>/dev/null | python3 -c \
+    "import sys,json; print(json.load(sys.stdin).get('paths',''))" 2>/dev/null || echo "")
+if [ "$EDITED_PATHS" = "$STORED_PATHS" ]; then
+    _pass "UI edit form — $POOL_NAME paths unchanged"
+else
+    _fail "UI edit form — $POOL_NAME paths changed" "got: ${EDITED_PATHS:0:200}"
 fi
 
 # ---------------------------------------------------------------------------
@@ -742,7 +779,7 @@ if [ -f "$UNIT_FILE" ]; then
         _pass "unit file — no reference to non-existent network-fs.target"
     fi
     VERIFY_OUT=$(systemd-analyze verify --man=no "$UNIT_FILE" 2>&1 | grep -F "$UNIT_NAME" || true)
-    if echo "$VERIFY_OUT" | grep -qiE 'invalid|failed|ignoring'; then
+    if grep -qiE 'invalid|failed|ignoring' <<< "$VERIFY_OUT"; then
         _fail "unit file — systemd-analyze verify reports problems" "$(echo "$VERIFY_OUT" | head -3)"
     else
         _pass "unit file — systemd-analyze verify clean"
@@ -972,6 +1009,93 @@ else
 fi
 
 # ---------------------------------------------------------------------------
+# UI contract — every request the datatable page can send
+# ui_payloads.py renders each Mergerfs request in the datatable YAML for the
+# integration pool. A new UI action without a case below fails the test.
+# ---------------------------------------------------------------------------
+section "UI contract — every datatable action"
+
+if mountpoint -q "$MNT1" 2>/dev/null; then
+    UI_ACTIONS=$(ui_payload actions --uuid "$POOL1_UUID" --path "/tmp/mgtest-not-a-branch") \
+        || _fail "UI actions — could not render datatable YAML"
+    while IFS= read -r action <&3; do
+        [ -n "$action" ] || continue
+        UI_METHOD=$(echo "$action" | python3 -c "import sys,json; print(json.load(sys.stdin)['method'])")
+        UI_DESC=$(echo "$action" | python3 -c "import sys,json; print(json.load(sys.stdin)['desc'])")
+        UI_PARAMS=$(echo "$action" | python3 -c "import sys,json; print(json.dumps(json.load(sys.stdin)['params']))")
+        case "$UI_METHOD" in
+            getList)
+                # The datatable store adds the paging parameters itself.
+                assert_rpc "UI action '$UI_DESC' ($UI_METHOD)" "Mergerfs" "getList" \
+                    "$LIST_PARAMS" >/dev/null
+                ;;
+            getPoolPaths)
+                # JSON escapes "/" as "\/", so compare the decoded paths.
+                UI_OUT=$(rpc "Mergerfs" "$UI_METHOD" "$UI_PARAMS" 2>&1)
+                if echo "$UI_OUT" | B1="$BRANCH1" python3 -c "
+import sys, json, os
+sys.exit(0 if os.environ['B1'] in [e['path'] for e in json.load(sys.stdin)] else 1)" 2>/dev/null; then
+                    _pass "UI action '$UI_DESC' ($UI_METHOD)"
+                else
+                    _fail "UI action '$UI_DESC' ($UI_METHOD) — $BRANCH1 not listed" "${UI_OUT:0:300}"
+                fi
+                ;;
+            restartPool)
+                assert_rpc "UI action '$UI_DESC' ($UI_METHOD)" "Mergerfs" "$UI_METHOD" \
+                    "$UI_PARAMS" >/dev/null
+                for i in $(seq 1 10); do
+                    mountpoint -q "$MNT1" 2>/dev/null && break
+                    sleep 2
+                done
+                ;;
+            delete)
+                # Run against a throwaway pool created through the UI form.
+                UI_DEL=$(rpc "Mergerfs" "set" "$(ui_payload form create --name mgtestuidelete \
+                    --paths "/tmp/mgtestuideleteb1")" 2>/dev/null | json_uuid)
+                UI_DEL_PARAMS=$(ui_payload actions --uuid "$UI_DEL" | python3 -c "
+import sys, json
+for line in sys.stdin:
+    a = json.loads(line)
+    if a['method'] == 'delete':
+        print(json.dumps(a['params']))
+        break")
+                assert_rpc "UI action '$UI_DESC' ($UI_METHOD)" "Mergerfs" "$UI_METHOD" \
+                    "$UI_DEL_PARAMS" >/dev/null
+                ;;
+            removePath)
+                # The path is not a branch, so the call must get past parameter
+                # validation (deletesource arrives as a string) and stop there.
+                for ds in false true; do
+                    UI_RP_PARAMS=$(echo "$UI_PARAMS" | DS=$ds python3 -c \
+                        "import sys,json,os; d=json.load(sys.stdin); d['deletesource']=os.environ['DS']; print(json.dumps(d))")
+                    assert_rpc_error "UI action '$UI_DESC' ($UI_METHOD, deletesource=\"$ds\") — params accepted" \
+                        "Mergerfs" "$UI_METHOD" "$UI_RP_PARAMS" "is not part of this pool"
+                done
+                ;;
+            toolsCommand)
+                UI_JOB=$(assert_rpc "UI action '$UI_DESC' ($UI_METHOD) — dispatched" "Mergerfs" \
+                    "$UI_METHOD" "$UI_PARAMS") || continue
+                if UI_OUT=$(wait_bgproc "$UI_JOB" 120); then
+                    if grep -q '^ERROR: ' <<< "$UI_OUT"; then
+                        _fail "UI action '$UI_DESC' ($UI_METHOD) — job failed" \
+                            "$(echo "$UI_OUT" | grep '^ERROR: ' | head -3)"
+                    else
+                        _pass "UI action '$UI_DESC' ($UI_METHOD) — job completed"
+                    fi
+                else
+                    _fail "UI action '$UI_DESC' ($UI_METHOD) — job did not finish within 120 s"
+                fi
+                ;;
+            *)
+                _fail "UI action '$UI_DESC' uses $UI_METHOD, which has no test — add one"
+                ;;
+        esac
+    done 3<<< "$UI_ACTIONS"
+else
+    _fail "UI actions — skipped (pool not mounted)"
+fi
+
+# ---------------------------------------------------------------------------
 # getPoolPaths / removePath — list branches, remove one, migrate its data
 # ---------------------------------------------------------------------------
 section "getPoolPaths — lists pool branches"
@@ -1138,6 +1262,7 @@ else
         CNT_B=$(find "$B2B" -type f | wc -l)
         CNT_C=$(find "$B2C" -type f | wc -l)
         info "Branch distribution: A=$CNT_A B=$CNT_B C=$CNT_C"
+        C_FILES=$(cd "$B2C" && find . -type f | sort)
         if [ "$CNT_C" -gt 0 ]; then
             _pass "files distributed onto branch C ($CNT_C files to migrate)"
         else
@@ -1145,29 +1270,42 @@ else
         fi
 
         # Remove branch C; its files must migrate onto branches A/B.
-        assert_rpc "removePath ($POOL2_NAME, branch C) — job dispatched" \
+        S_JOB=$(assert_rpc "removePath ($POOL2_NAME, branch C) — job dispatched" \
             "Mergerfs" "removePath" \
-            "{\"uuid\":\"$POOL2_UUID\",\"path\":\"$B2C\",\"deletesource\":false}" >/dev/null
+            "{\"uuid\":\"$POOL2_UUID\",\"path\":\"$B2C\",\"deletesource\":false}")
 
-        # The merged view dips while C is detached and recovers as rsync copies
-        # its files back in. Wait for the full count to return (and config to
-        # drop branch C) before checking integrity.
-        info "Waiting for removePath migration to complete (up to 180 s) ..."
-        RECOVERED=false
-        CURRENT=0
-        for i in $(seq 1 90); do
-            CURRENT=$(find "$MNT2" -type f 2>/dev/null | wc -l)
-            if [ "$CURRENT" -eq "$EXPECTED" ] && ! pool_has_path "$POOL2_UUID" "$B2C"; then
-                RECOVERED=true
-                break
+        # Wait for the job itself to finish. The file count is no signal: the
+        # config drops branch C before the mount does, so C's files stay
+        # visible through the pool until the branch is detached.
+        info "Waiting for removePath migration job to finish (up to 180 s) ..."
+        if S_OUT=$(wait_bgproc "$S_JOB" 180); then
+            if grep -q '^ERROR: ' <<< "$S_OUT"; then
+                _fail "removePath ($POOL2_NAME) — job failed" \
+                    "$(grep '^ERROR: ' <<< "$S_OUT" | head -c 300)"
+            else
+                _pass "removePath ($POOL2_NAME) — job completed"
             fi
-            sleep 2
-        done
+        else
+            _fail "removePath ($POOL2_NAME) — job still running after 180 s"
+        fi
 
-        if [ "$RECOVERED" = true ]; then
+        CURRENT=$(find "$MNT2" -type f 2>/dev/null | wc -l)
+        if [ "$CURRENT" -eq "$EXPECTED" ]; then
             _pass "all $EXPECTED files visible through pool after branch removal"
         else
-            _fail "file count did not recover to $EXPECTED after 180 s (got $CURRENT)"
+            _fail "file count after branch removal is $CURRENT, expected $EXPECTED"
+        fi
+
+        # The pool must no longer have branch C mounted.
+        # Branches read as "/path=RW:/path2=RW"; strip the mode from each.
+        LIVE_BRANCHES=$(getfattr -n user.mergerfs.branches --only-values \
+            "$MNT2/.mergerfs" 2>/dev/null | tr ':' '\n' | sed 's/=[^=]*$//')
+        if [ -z "$LIVE_BRANCHES" ]; then
+            _fail "could not read live branches from $MNT2/.mergerfs"
+        elif grep -qxF "$B2C" <<< "$LIVE_BRANCHES"; then
+            _fail "branch C still mounted in the live pool"
+        else
+            _pass "branch C detached from the live pool"
         fi
 
         # Branch C must be gone from the pool configuration.
@@ -1187,11 +1325,16 @@ else
             _fail "data integrity — manifest changed after migration ($DIFFC differing lines)"
         fi
 
-        # The migrated files must physically reside on the remaining branches.
-        if find "$B2A" "$B2B" -type f -name 'file_*.txt' 2>/dev/null | grep -q .; then
-            _pass "migrated files present on remaining branches"
+        # Every file that was on branch C must now physically reside on A or B.
+        MISSING_C=0
+        while IFS= read -r f; do
+            [ -n "$f" ] || continue
+            [ -f "$B2A/$f" ] || [ -f "$B2B/$f" ] || MISSING_C=$((MISSING_C + 1))
+        done <<< "$C_FILES"
+        if [ "$CNT_C" -gt 0 ] && [ "$MISSING_C" -eq 0 ]; then
+            _pass "all $CNT_C migrated files present on branches A/B"
         else
-            _fail "no migrated files found on branches A/B"
+            _fail "$MISSING_C of $CNT_C branch C files not found on branches A/B"
         fi
 
         # --- removePath while the pool is unmounted must be refused ---
@@ -1270,7 +1413,7 @@ else
             "Mergerfs" "removePath" \
             "{\"uuid\":\"$POOL4_UUID\",\"path\":\"$B4B\",\"deletesource\":false}") || true
         if FS_OUT=$(wait_bgproc "$FS_JOB" 60); then
-            if echo "$FS_OUT" | grep -q "Not enough free space"; then
+            if grep -q "Not enough free space" <<< "$FS_OUT"; then
                 _pass "free-space — job refused for lack of space (minfreespace honoured)"
             else
                 _fail "free-space — job did not report missing space" "${FS_OUT:0:300}"
@@ -1299,13 +1442,13 @@ else
         "Mergerfs" "removePath" \
         "{\"uuid\":\"$POOL4_UUID\",\"path\":\"$B4B\",\"deletesource\":false}") || true
     if RB_OUT=$(wait_bgproc "$RB_JOB" 120); then
-        if echo "$RB_OUT" | grep -q "the path was restored to the pool"; then
+        if grep -q "the path was restored to the pool" <<< "$RB_OUT"; then
             _pass "rollback — failed migration triggered a restore"
         else
             _fail "rollback — no restore reported (did the migration unexpectedly succeed?)" \
                 "${RB_OUT:0:300}"
         fi
-        if echo "$RB_OUT" | grep -q "restoring it also failed"; then
+        if grep -q "restoring it also failed" <<< "$RB_OUT"; then
             _fail "rollback — restore reported an error" "${RB_OUT:0:300}"
         fi
     else
