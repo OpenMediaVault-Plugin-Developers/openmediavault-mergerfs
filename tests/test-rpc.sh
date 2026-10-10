@@ -118,6 +118,83 @@ dump_bgproc() {
     rpc "Exec" "getOutput" "{\"filename\":\"$filename\",\"pos\":0}" 2>&1 | head -80 >&2
 }
 
+# Wait until a background job finished, then echo its output. $1 is the raw
+# JSON string returned by an execBgProc RPC, $2 the timeout in seconds.
+# Only Exec.getOutput is polled: Exec.isRunning deletes the status file of a
+# finished job. A failed job makes getOutput throw instead of returning its
+# output, so the error message is echoed as "ERROR: <message>".
+# Returns 1 if the job is still running after the timeout.
+wait_bgproc() {
+    local raw=$1 timeout=${2:-60} filename pos=0 i resp state
+    filename=$(echo "$raw" | python3 -c "import sys,json; print(json.load(sys.stdin))" 2>/dev/null || echo "")
+    [ -n "$filename" ] || return 1
+    for i in $(seq 1 "$timeout"); do
+        resp=$(omv-rpc -u admin "Exec" "getOutput" \
+            "{\"filename\":\"$filename\",\"pos\":$pos}" 2>&1 || true)
+        # Prints the new output, then a last line "<state> <pos>".
+        state=$(echo "$resp" | POS_ENV=$pos python3 -c "
+import sys, json, os
+raw = sys.stdin.read()
+try:
+    d = json.loads(raw)
+except ValueError:
+    d = {'error': {'message': raw.strip()}}
+if isinstance(d, dict) and d.get('error'):
+    print('ERROR: ' + str(d['error'].get('message', '')))
+    print('done ' + os.environ['POS_ENV'])
+else:
+    d = d.get('response', d) if isinstance(d, dict) else {}
+    out = d.get('output', '')
+    sys.stdout.write(out if not out or out.endswith(chr(10)) else out + chr(10))
+    print(('running ' if d.get('running') else 'done ') + str(d.get('pos', 0)))
+" 2>/dev/null || echo "done $pos")
+        echo "$state" | sed '$d'
+        pos=$(echo "$state" | tail -1 | cut -d' ' -f2)
+        [ "$(echo "$state" | tail -1 | cut -d' ' -f1)" = "done" ] && return 0
+        sleep 1
+    done
+    return 1
+}
+
+# Build Mergerfs.set params for a new pool. $1 name, $2 newline-separated
+# paths, $3 optional JSON object merged on top (a null value drops the key).
+# Values are passed via the environment so paths may contain any character.
+pool_params() {
+    POOL_NAME_ENV=$1 POOL_PATHS_ENV=$2 POOL_EXTRA_ENV=${3:-'{}'} \
+    NEW_UUID_ENV=$OMV_NEW_UUID python3 -c "
+import json, os
+d = {
+    'uuid': os.environ['NEW_UUID_ENV'], 'mntentref': os.environ['NEW_UUID_ENV'],
+    'name': os.environ['POOL_NAME_ENV'], 'paths': os.environ['POOL_PATHS_ENV'],
+    'sharedfolderrefs': [], 'filesystems': [],
+    'createpolicy': 'pfrd', 'minfreespace': 4, 'minfreespaceunit': 'G',
+    'options': 'defaults,cache.files=off',
+}
+d.update(json.loads(os.environ['POOL_EXTRA_ENV']))
+print(json.dumps({k: v for k, v in d.items() if v is not None}))"
+}
+
+# Echo the "uuid" field of an RPC JSON result.
+json_uuid() {
+    python3 -c "import sys,json; print(json.load(sys.stdin).get('uuid',''))" 2>/dev/null || echo ""
+}
+
+# Deploy mergerfs and (re)start the given pool mount; return 0 once mounted.
+deploy_and_mount() {
+    local mnt=$1 unit i
+    omv-salt deploy run mergerfs &>/dev/null || true
+    unit=$(systemd-escape --path --suffix=mount "$mnt" 2>/dev/null || echo "")
+    if [ -n "$unit" ]; then
+        systemctl daemon-reload 2>/dev/null || true
+        systemctl restart "$unit" 2>/dev/null || true
+    fi
+    for i in $(seq 1 15); do
+        mountpoint -q "$mnt" 2>/dev/null && return 0
+        sleep 2
+    done
+    return 1
+}
+
 # ---------------------------------------------------------------------------
 # State
 # ---------------------------------------------------------------------------
@@ -138,6 +215,11 @@ POOL3_UUID=""
 B3A=""
 B3B=""
 
+# Fourth pool used by the removePath free-space and rollback tests.
+POOL4_UUID=""
+B4A=""
+B4B=""
+
 LIST_PARAMS='{"start":0,"limit":null,"sortfield":null,"sortdir":null}'
 OMV_NEW_UUID=$(. /etc/default/openmediavault 2>/dev/null; \
     echo "${OMV_CONFIGOBJECT_NEW_UUID:-fa4b1c66-ef79-11e5-87a0-0002b3a176b4}")
@@ -155,6 +237,9 @@ MNT2="${OMV_MOUNT_DIR}/mergerfs/${POOL2_NAME}"
 # Deliberately contains dashes and a dot to exercise systemd's \x2d escaping.
 POOL3_NAME="mg-test-dash.pool"
 MNT3="${OMV_MOUNT_DIR}/mergerfs/${POOL3_NAME}"
+
+POOL4_NAME="mgtestpool4"
+MNT4="${OMV_MOUNT_DIR}/mergerfs/${POOL4_NAME}"
 
 # ---------------------------------------------------------------------------
 # Cleanup — always runs on exit
@@ -180,6 +265,7 @@ cleanup() {
     stop_pool_mount "$MNT1"
     stop_pool_mount "$MNT2"
     stop_pool_mount "$MNT3"
+    stop_pool_mount "$MNT4"
 
     # Delete integration-test pools from DB
     if [ -n "$POOL1_UUID" ]; then
@@ -194,6 +280,10 @@ cleanup() {
         info "Deleting pool $POOL3_UUID from DB"
         rpc "Mergerfs" "delete" "{\"uuid\":\"$POOL3_UUID\"}" &>/dev/null || true
     fi
+    if [ -n "$POOL4_UUID" ]; then
+        info "Deleting pool $POOL4_UUID from DB"
+        rpc "Mergerfs" "delete" "{\"uuid\":\"$POOL4_UUID\"}" &>/dev/null || true
+    fi
 
     # Redeploy to remove generated systemd unit files
     info "Running omv-salt deploy run mergerfs (cleanup)"
@@ -207,6 +297,8 @@ cleanup() {
     [ -n "$B2C" ] && rm -rf "$B2C" 2>/dev/null || true
     [ -n "$B3A" ] && rm -rf "$B3A" 2>/dev/null || true
     [ -n "$B3B" ] && rm -rf "$B3B" 2>/dev/null || true
+    [ -n "$B4A" ] && rm -rf "$B4A" 2>/dev/null || true
+    [ -n "$B4B" ] && rm -rf "$B4B" 2>/dev/null || true
     [ -n "$SALT_LOG" ] && rm -f "$SALT_LOG" 2>/dev/null || true
 
     info "Done."
@@ -432,6 +524,58 @@ import json; print(json.dumps({
     'options': '',
 }))")"
 
+section "Validation — branch paths (shell/systemd-unsafe characters rejected)"
+
+# These paths end up in a root shell command and the systemd unit.
+for bad in '/tmp/mgtest$(id)' '/tmp/mgtest"q' "/tmp/mgtest'q" '/tmp/mgtest;q' \
+    '/tmp/mgtest`q' '/tmp/mgtest|q' '/tmp/mgtest&q' '/tmp/mgtest\q' 'tmp/mgtestrelative'; do
+    assert_rpc_fails "set — unsafe path rejected: $bad" "Mergerfs" "set" \
+        "$(pool_params "mgtestbadpath" "/tmp/mgtestgoodb1"$'\n'"$bad")"
+    # Remove the pool again if the bad path was wrongly accepted.
+    LEAKED_UUID=$(rpc "Mergerfs" "getList" "$LIST_PARAMS" 2>/dev/null | python3 -c "
+import sys, json
+for p in json.load(sys.stdin).get('data', []):
+    if p.get('name') == 'mgtestbadpath':
+        print(p.get('uuid', ''))
+" 2>/dev/null || echo "")
+    [ -n "$LEAKED_UUID" ] && rpc "Mergerfs" "delete" "{\"uuid\":\"$LEAKED_UUID\"}" &>/dev/null
+done
+
+section "Validation — accepted edge cases"
+
+# The UI allows a minimum free space of 0; the RPC schema must agree.
+crud_test "mgtestminfree0" "$(pool_params "mgtestminfree0" \
+    "/tmp/mgtestminfree0b1"$'\n'"/tmp/mgtestminfree0b2" '{"minfreespace": 0}')"
+
+# Optional array/string params may be omitted by API callers.
+crud_test "mgtestnoarrays" "$(pool_params "mgtestnoarrays" \
+    "/tmp/mgtestnoarraysb1"$'\n'"/tmp/mgtestnoarraysb2" \
+    '{"sharedfolderrefs": null, "filesystems": null, "options": null}')"
+
+# Globs and spaces are legitimate in branch paths.
+crud_test "mgtestglobspace" "$(pool_params "mgtestglobspace" \
+    "/tmp/mgtest glob*"$'\n'"/tmp/mgtest space dir")"
+
+# Whitespace and CR around each path are trimmed, blank lines are dropped.
+TRIM_RESULT=$(rpc "Mergerfs" "set" "$(pool_params "mgtesttrim" \
+    $'  /tmp/mgtesttrimb1  \r\n/tmp/mgtesttrimb2\t\n\n')" 2>/dev/null || echo "{}")
+TRIM_UUID=$(echo "$TRIM_RESULT" | json_uuid)
+if [ -n "$TRIM_UUID" ] && [ "$TRIM_UUID" != "$OMV_NEW_UUID" ]; then
+    TRIM_PATHS=$(rpc "Mergerfs" "get" "{\"uuid\":\"$TRIM_UUID\"}" 2>/dev/null | python3 -c \
+        "import sys,json; print(repr(json.load(sys.stdin).get('paths','').splitlines()))" 2>/dev/null)
+    if [ "$TRIM_PATHS" = "['/tmp/mgtesttrimb1', '/tmp/mgtesttrimb2']" ]; then
+        _pass "set — paths trimmed and blank lines dropped"
+    else
+        _fail "set — paths not trimmed" "got: $TRIM_PATHS"
+    fi
+    rpc "Mergerfs" "delete" "{\"uuid\":\"$TRIM_UUID\"}" &>/dev/null || true
+else
+    _fail "set — trim test pool could not be created" "${TRIM_RESULT:0:200}"
+fi
+
+assert_rpc_fails "restartPool — malformed UUID rejected" "Mergerfs" "restartPool" \
+    '{"uuid":"not-a-uuid"}'
+
 assert_rpc_fails "get — unknown UUID" "Mergerfs" "get" \
     '{"uuid":"00000000-0000-0000-0000-000000000000"}'
 
@@ -477,14 +621,61 @@ else
     _fail "set — mntentref not properly assigned (FsTab entry may be missing)"
 fi
 
+# A new pool must always get its own mount point entry, even if the caller
+# passes the mntentref of an existing one (which would otherwise be overwritten).
+if [ -n "$MNTENTREF1" ] && [ "$MNTENTREF1" != "$OMV_NEW_UUID" ]; then
+    HIJACK_RESULT=$(rpc "Mergerfs" "set" "$(pool_params "mgtesthijack" \
+        "/tmp/mgtesthijackb1"$'\n'"/tmp/mgtesthijackb2" \
+        "{\"mntentref\": \"$MNTENTREF1\"}")" 2>/dev/null || echo "{}")
+    HIJACK_UUID=$(echo "$HIJACK_RESULT" | json_uuid)
+    HIJACK_MNTENT=$(echo "$HIJACK_RESULT" | python3 -c \
+        "import sys,json; print(json.load(sys.stdin).get('mntentref',''))" 2>/dev/null || echo "")
+    if [ -n "$HIJACK_MNTENT" ] && [ "$HIJACK_MNTENT" != "$MNTENTREF1" ]; then
+        _pass "set — new pool gets its own mntentref (caller value ignored)"
+    else
+        _fail "set — new pool reused caller-supplied mntentref" "got: ${HIJACK_MNTENT:-empty}"
+    fi
+    MNT1_DIR=$(rpc "FsTab" "get" "{\"uuid\":\"$MNTENTREF1\"}" 2>/dev/null | python3 -c \
+        "import sys,json; print(json.load(sys.stdin).get('dir',''))" 2>/dev/null || echo "")
+    if [ "$MNT1_DIR" = "$MNT1" ]; then
+        _pass "set — existing mount point entry of $POOL_NAME left untouched"
+    else
+        _fail "set — mount point entry of $POOL_NAME was modified" "dir: ${MNT1_DIR:-empty}"
+    fi
+    # Deleting the pool would also delete a shared mount point entry.
+    if [ -n "$HIJACK_UUID" ] && [ "$HIJACK_UUID" != "$OMV_NEW_UUID" ] \
+        && [ "$HIJACK_MNTENT" != "$MNTENTREF1" ]; then
+        rpc "Mergerfs" "delete" "{\"uuid\":\"$HIJACK_UUID\"}" &>/dev/null || true
+    fi
+fi
+
 # Verify get returns the pool with correct paths
 GET_RESULT=$(rpc "Mergerfs" "get" "{\"uuid\":\"$POOL1_UUID\"}" 2>/dev/null || echo "{}")
 STORED_PATHS=$(echo "$GET_RESULT" | python3 -c \
     "import sys,json; print(json.load(sys.stdin).get('paths',''))" 2>/dev/null || echo "")
-if echo "$STORED_PATHS" | grep -q "$BRANCH1"; then
-    _pass "get — stored paths contain branch1"
+if [ "$STORED_PATHS" = "${BRANCH1}"$'\n'"${BRANCH2}" ]; then
+    _pass "get — stored paths are exactly branch1, branch2 (in order)"
 else
-    _fail "get — stored paths missing branch1 (got: ${STORED_PATHS:0:100})"
+    _fail "get — stored paths wrong" "got: ${STORED_PATHS:0:200}"
+fi
+
+# Three paths with a duplicate and padding: every path must survive intact
+# and in order (guards against the last entry being overwritten).
+ORDER_RESULT=$(rpc "Mergerfs" "set" "$(pool_params "mgtestorder" \
+    $'/tmp/mgtestorderb1\n/tmp/mgtestorderb2\n/tmp/mgtestorderb1\n /tmp/mgtestorderb3 ')" \
+    2>/dev/null || echo "{}")
+ORDER_UUID=$(echo "$ORDER_RESULT" | json_uuid)
+if [ -n "$ORDER_UUID" ] && [ "$ORDER_UUID" != "$OMV_NEW_UUID" ]; then
+    ORDER_PATHS=$(rpc "Mergerfs" "get" "{\"uuid\":\"$ORDER_UUID\"}" 2>/dev/null | python3 -c \
+        "import sys,json; print(':'.join(json.load(sys.stdin).get('paths','').splitlines()))" 2>/dev/null)
+    if [ "$ORDER_PATHS" = "/tmp/mgtestorderb1:/tmp/mgtestorderb2:/tmp/mgtestorderb3" ]; then
+        _pass "set — three paths stored intact, deduplicated, in order"
+    else
+        _fail "set — paths altered on save" "got: $ORDER_PATHS"
+    fi
+    rpc "Mergerfs" "delete" "{\"uuid\":\"$ORDER_UUID\"}" &>/dev/null || true
+else
+    _fail "set — order test pool could not be created" "${ORDER_RESULT:0:200}"
 fi
 
 # ---------------------------------------------------------------------------
@@ -519,6 +710,24 @@ UNIT_FILE="/etc/systemd/system/${UNIT_NAME}"
 
 if [ -f "$UNIT_FILE" ]; then
     _pass "unit file created: $UNIT_FILE"
+    # Each required mount is quoted so paths with spaces stay intact.
+    REQ_LINE=$(grep '^RequiresMountsFor=' "$UNIT_FILE" || echo "")
+    if [ "$REQ_LINE" = "RequiresMountsFor=" ] || [[ "$REQ_LINE" =~ ^RequiresMountsFor=\".+\"$ ]]; then
+        _pass "unit file — RequiresMountsFor paths quoted ($REQ_LINE)"
+    else
+        _fail "unit file — RequiresMountsFor not quoted" "$REQ_LINE"
+    fi
+    if grep -q 'network-fs.target' "$UNIT_FILE"; then
+        _fail "unit file — still references non-existent network-fs.target"
+    else
+        _pass "unit file — no reference to non-existent network-fs.target"
+    fi
+    VERIFY_OUT=$(systemd-analyze verify --man=no "$UNIT_FILE" 2>&1 | grep -F "$UNIT_NAME" || true)
+    if echo "$VERIFY_OUT" | grep -qiE 'invalid|failed|ignoring'; then
+        _fail "unit file — systemd-analyze verify reports problems" "$(echo "$VERIFY_OUT" | head -3)"
+    else
+        _pass "unit file — systemd-analyze verify clean"
+    fi
 else
     _fail "unit file missing: $UNIT_FILE"
     info "Salt may have failed before creating the unit. Check the output above."
@@ -660,6 +869,17 @@ for p in data:
             _fail "getList — expected inuse=true after shared folder, got: $POOL_INUSE2"
         fi
 
+        # The RPC itself must refuse, not only the UI's disabled button.
+        assert_rpc_fails "delete — pool in use by a shared folder rejected" \
+            "Mergerfs" "delete" "{\"uuid\":\"$POOL1_UUID\"}"
+        assert_rpc "get — in-use pool still present after rejected delete" \
+            "Mergerfs" "get" "{\"uuid\":\"$POOL1_UUID\"}" "\"uuid\":\"$POOL1_UUID\"" >/dev/null
+        if mountpoint -q "$MNT1" 2>/dev/null; then
+            _pass "in-use pool still mounted after rejected delete"
+        else
+            _fail "in-use pool unmounted after rejected delete"
+        fi
+
         rpc "ShareMgmt" "delete" \
             "{\"uuid\":\"$SF_UUID\",\"recursive\":false}" &>/dev/null || true
     else
@@ -701,6 +921,22 @@ if mountpoint -q "$MNT1" 2>/dev/null; then
         "{\"uuid\":\"$POOL1_UUID\",\"command\":\"balance\",\"practice\":false,\"dedup\":\"none\"}" >/dev/null
 else
     _fail "toolsCommand balance — skipped (pool not mounted)"
+fi
+
+section "toolsCommand — invalid arguments rejected before dispatch"
+
+assert_rpc_fails "toolsCommand — unknown command rejected" "Mergerfs" "toolsCommand" \
+    "{\"uuid\":\"$POOL1_UUID\",\"command\":\"rm\",\"practice\":true,\"dedup\":\"oldest\"}"
+assert_rpc_fails "toolsCommand — unknown dedup policy rejected" "Mergerfs" "toolsCommand" \
+    "{\"uuid\":\"$POOL1_UUID\",\"command\":\"dedup\",\"practice\":true,\"dedup\":\"bogus\"}"
+assert_rpc_fails "toolsCommand — shell metacharacters in dedup rejected" "Mergerfs" "toolsCommand" \
+    "{\"uuid\":\"$POOL1_UUID\",\"command\":\"dedup\",\"practice\":true,\"dedup\":\"oldest; touch /tmp/mgtestpwned\"}"
+sleep 2  # give a wrongly dispatched background job time to run
+if [ -e /tmp/mgtestpwned ]; then
+    _fail "toolsCommand — injected command was executed"
+    rm -f /tmp/mgtestpwned
+else
+    _pass "toolsCommand — injected command not executed"
 fi
 
 section "toolsCommand — dedup (practice mode, no files deleted)"
@@ -939,56 +1175,141 @@ else
             _fail "no migrated files found on branches A/B"
         fi
 
-        # --- removePath while the pool is unmounted (restart/remount path) ---
-        # When the pool is not mounted, the mergerfs runtime control file is
-        # unavailable; removePath must rely on the mount being (re)started with
-        # the new branch list (salt's deploy remounts it, with the explicit
-        # restartPoolMount() as the deeper safety net). Force the unmounted state
-        # and verify the pool comes back with branch B removed and data migrated.
+        # --- removePath while the pool is unmounted must be refused ---
+        # The data is migrated through the pool mount, so removePath rejects
+        # an unmounted pool up front, before the configuration is touched.
         if pool_has_path "$POOL2_UUID" "$B2B" && mountpoint -q "$MNT2" 2>/dev/null; then
-            echo "fallback marker" > "$B2B/.mgfallback"
-            FB_PRE=$(manifest "$MNT2")
+            echo "unmounted marker" > "$B2B/.mgunmounted"
             stop_pool_mount "$MNT2"
             if mountpoint -q "$MNT2" 2>/dev/null; then
-                _fail "fallback — could not unmount $POOL2_NAME; skipping"
+                _fail "unmounted — could not unmount $POOL2_NAME; skipping"
             else
-                _pass "fallback — $POOL2_NAME unmounted before removePath"
-                FB_JOB=$(assert_rpc "removePath (branch B, pool unmounted) — job dispatched" \
+                _pass "unmounted — $POOL2_NAME unmounted before removePath"
+                assert_rpc_fails "removePath — unmounted pool rejected" \
                     "Mergerfs" "removePath" \
-                    "{\"uuid\":\"$POOL2_UUID\",\"path\":\"$B2B\",\"deletesource\":false}") || true
-
-                info "Waiting for pool to remount and migrate (up to 120 s) ..."
-                FB_OK=false
-                for i in $(seq 1 60); do
-                    if mountpoint -q "$MNT2" 2>/dev/null \
-                        && ! pool_has_path "$POOL2_UUID" "$B2B" \
-                        && [ -f "$B2A/.mgfallback" ]; then
-                        FB_OK=true
-                        break
-                    fi
-                    sleep 2
-                done
-
-                if [ "$FB_OK" = true ]; then
-                    _pass "fallback — pool remounted, branch B removed, data migrated to A"
+                    "{\"uuid\":\"$POOL2_UUID\",\"path\":\"$B2B\",\"deletesource\":false}"
+                if pool_has_path "$POOL2_UUID" "$B2B"; then
+                    _pass "unmounted — branch B still in pool config"
                 else
-                    _fail "fallback — remount/migration did not complete after 120 s"
-                    dump_bgproc "$FB_JOB"
-                    info "mountpoint state: $(mountpoint "$MNT2" 2>&1)"
-                    info "pool still has B2B: $(pool_has_path "$POOL2_UUID" "$B2B" && echo yes || echo no)"
+                    _fail "unmounted — branch B removed from config although the call was rejected"
                 fi
-
-                # Every file still readable through the pool with identical content.
-                FB_POST=$(manifest "$MNT2")
-                if [ "$FB_PRE" = "$FB_POST" ]; then
-                    _pass "fallback — data integrity preserved after unmounted removal"
+                if [ -f "$B2B/.mgunmounted" ] && [ ! -f "$B2A/.mgunmounted" ]; then
+                    _pass "unmounted — no data was moved"
                 else
-                    _fail "fallback — manifest changed after unmounted removal"
+                    _fail "unmounted — data was moved although the call was rejected"
                 fi
             fi
         else
-            _fail "fallback — preconditions not met (branch B missing or pool unmounted)"
+            _fail "unmounted — preconditions not met (branch B missing or pool unmounted)"
         fi
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+# removePath — free-space pre-check and rollback on a failed migration
+# ---------------------------------------------------------------------------
+section "removePath — free-space pre-check and rollback"
+
+stop_pool_mount "$MNT4"
+B4A=$(mktemp -d); B4B=$(mktemp -d)
+# "clash" is a directory on A and a regular file on B. Through the pool it is
+# A's directory, so rsync cannot copy B's file over it and the migration fails.
+mkdir -p "$B4A/clash"
+echo "dir content" > "$B4A/clash/inner.txt"
+echo "file content" > "$B4B/clash"
+echo "rollback marker" > "$B4B/rbmarker.txt"
+_pass "pool4 branch directories created: $B4A, $B4B"
+
+RESULT4=$(assert_rpc "set ($POOL4_NAME)" "Mergerfs" "set" \
+    "$(pool_params "$POOL4_NAME" "${B4A}"$'\n'"${B4B}" \
+        '{"createpolicy": "ff", "minfreespace": 1, "minfreespaceunit": "M"}')") || true
+POOL4_UUID=$(echo "$RESULT4" | json_uuid)
+MNTENTREF4=$(echo "$RESULT4" | python3 -c \
+    "import sys,json; print(json.load(sys.stdin).get('mntentref',''))" 2>/dev/null || echo "")
+
+# Re-save pool4 with a different minimum free space (an edit, not a create).
+set_pool4_minfree() {
+    rpc "Mergerfs" "set" "$(pool_params "$POOL4_NAME" "${B4A}"$'\n'"${B4B}" \
+        "{\"uuid\": \"$POOL4_UUID\", \"mntentref\": \"$MNTENTREF4\", \"createpolicy\": \"ff\",
+          \"minfreespace\": $1, \"minfreespaceunit\": \"$2\"}")" &>/dev/null
+}
+
+if [ -z "$POOL4_UUID" ] || [ "$POOL4_UUID" = "$OMV_NEW_UUID" ]; then
+    _fail "pool4 — failed to create $POOL4_NAME; skipping"
+elif ! deploy_and_mount "$MNT4"; then
+    _fail "pool4 — $POOL4_NAME not mounted; skipping"
+elif [ ! -f "$MNT4/rbmarker.txt" ]; then
+    _fail "pool4 — $POOL4_NAME mounted but branches invalid; skipping" \
+        "$(ls -la "$MNT4" 2>&1 | head -5)"
+else
+    _pass "$POOL4_NAME mounted at $MNT4"
+
+    # --- Free-space pre-check: with a huge minimum free space nothing fits,
+    # so the job must fail before the configuration is changed.
+    if set_pool4_minfree 99999 G; then
+        FS_JOB=$(assert_rpc "removePath (min free space unreachable) — job dispatched" \
+            "Mergerfs" "removePath" \
+            "{\"uuid\":\"$POOL4_UUID\",\"path\":\"$B4B\",\"deletesource\":false}") || true
+        if FS_OUT=$(wait_bgproc "$FS_JOB" 60); then
+            if echo "$FS_OUT" | grep -q "Not enough free space"; then
+                _pass "free-space — job refused for lack of space (minfreespace honoured)"
+            else
+                _fail "free-space — job did not report missing space" "${FS_OUT:0:300}"
+            fi
+        else
+            _fail "free-space — job did not finish within 60 s"
+        fi
+        if pool_has_path "$POOL4_UUID" "$B4B"; then
+            _pass "free-space — branch B still in pool config"
+        else
+            _fail "free-space — branch B removed although the space check failed"
+        fi
+        if [ -f "$MNT4/rbmarker.txt" ]; then
+            _pass "free-space — branch B data still visible through the pool"
+        else
+            _fail "free-space — branch B data no longer visible through the pool"
+        fi
+        set_pool4_minfree 1 M || _fail "pool4 — could not reset minimum free space"
+    else
+        _fail "free-space — could not edit $POOL4_NAME"
+    fi
+
+    # --- Rollback: the migration fails after the branch was dropped, so the
+    # branch must be restored in the config and on the live mount.
+    RB_JOB=$(assert_rpc "removePath (migration will fail) — job dispatched" \
+        "Mergerfs" "removePath" \
+        "{\"uuid\":\"$POOL4_UUID\",\"path\":\"$B4B\",\"deletesource\":false}") || true
+    if RB_OUT=$(wait_bgproc "$RB_JOB" 120); then
+        if echo "$RB_OUT" | grep -q "the path was restored to the pool"; then
+            _pass "rollback — failed migration triggered a restore"
+        else
+            _fail "rollback — no restore reported (did the migration unexpectedly succeed?)" \
+                "${RB_OUT:0:300}"
+        fi
+        if echo "$RB_OUT" | grep -q "restoring it also failed"; then
+            _fail "rollback — restore reported an error" "${RB_OUT:0:300}"
+        fi
+    else
+        _fail "rollback — job did not finish within 120 s"
+    fi
+    if pool_has_path "$POOL4_UUID" "$B4B"; then
+        _pass "rollback — branch B restored in pool config"
+    else
+        _fail "rollback — branch B missing from pool config after failed migration"
+    fi
+    for i in $(seq 1 10); do
+        mountpoint -q "$MNT4" 2>/dev/null && [ -f "$MNT4/rbmarker.txt" ] && break
+        sleep 1
+    done
+    if mountpoint -q "$MNT4" 2>/dev/null && [ -f "$MNT4/rbmarker.txt" ]; then
+        _pass "rollback — branch B data visible through the pool again"
+    else
+        _fail "rollback — branch B data not visible through the pool"
+    fi
+    if [ -f "$B4B/rbmarker.txt" ] && [ -f "$B4B/clash" ]; then
+        _pass "rollback — source files left on branch B"
+    else
+        _fail "rollback — files missing from branch B"
     fi
 fi
 
@@ -1086,6 +1407,28 @@ else
             _pass "dash-name pool remounted after restartPool"
         else
             _fail "dash-name pool not remounted after restartPool"
+        fi
+
+        # Deleting a pool and applying the change must unmount it and remove
+        # its unit, even when it was the last pool using that unit.
+        assert_rpc "delete ($POOL3_NAME)" "Mergerfs" "delete" \
+            "{\"uuid\":\"$POOL3_UUID\"}" >/dev/null && POOL3_UUID=""
+        omv-salt deploy run mergerfs &>/dev/null || true
+        if mountpoint -q "$MNT3" 2>/dev/null; then
+            _fail "delete — $POOL3_NAME still mounted after deploy"
+        else
+            _pass "delete — $POOL3_NAME unmounted after deploy"
+        fi
+        if [ -f "$UNIT3_FILE" ]; then
+            _fail "delete — unit file still present: $UNIT3_FILE"
+        else
+            _pass "delete — unit file removed"
+        fi
+        if [ "$(systemctl show -P LoadState "$UNIT3" 2>/dev/null)" = "loaded" ] \
+            && [ "$(systemctl show -P FragmentPath "$UNIT3" 2>/dev/null)" = "$UNIT3_FILE" ]; then
+            _fail "delete — systemd still loads the removed unit (no daemon-reload)"
+        else
+            _pass "delete — systemd reloaded, removed unit no longer loaded from disk"
         fi
     else
         _fail "$POOL3_NAME not mounted at $MNT3 after 30 s"
