@@ -20,4 +20,10 @@ configure_monit_mergerfs_service:
     - group: root
     - mode: '0644'
 
+{% else %}
+
+remove_monit_mergerfs_service:
+  file.absent:
+    - name: "/etc/monit/conf.d/openmediavault-mergerfs.conf"
+
 {% endif %}

@@ -18,6 +18,14 @@ case "$1" in
     purge)
         remove_action
         omv_config_delete "/config/services/mergerfs"
+        # Remove the hidden mount point entries of the pools.
+        omv_config_delete "/config/system/fstab/mntent[type='fuse.mergerfs']"
+        # Remove the generated mount units and monit checks.
+        pooldiresc="$(systemd-escape --path "${OMV_MOUNT_DIR:-/srv}/mergerfs")"
+        rm -f "/etc/systemd/system/${pooldiresc}"-*.mount \
+            "/etc/systemd/system/multi-user.target.wants/${pooldiresc}"-*.mount \
+            /etc/monit/conf.d/openmediavault-mergerfs.conf
+        systemctl daemon-reload || true
     ;;
 
     upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)

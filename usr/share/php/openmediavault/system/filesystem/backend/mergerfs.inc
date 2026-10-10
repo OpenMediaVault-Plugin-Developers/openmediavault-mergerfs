@@ -44,7 +44,13 @@ class Mergerfs extends BackendAbstract
             $objects = [];
         }
         foreach ($objects as $object) {
-            $filesystem = $this->getImpl($object->get('uuid'));
+            // Skip broken pools (e.g. a missing mount point entry) so they
+            // do not break the enumeration of all other filesystems.
+            try {
+                $filesystem = $this->getImpl($object->get('uuid'));
+            } catch (\OMV\Exception $e) {
+                continue;
+            }
 
             $filesystems[$filesystem->getDeviceFile()] = [
                 'devicefile' => $filesystem->getDeviceFile(),
@@ -172,8 +178,9 @@ class Mergerfs extends BackendAbstract
         if (!is_uuid($uuid)) {
             $shellCmd = sprintf('systemctl cat "%s" | awk -F":" \'/What/ { print $2 }\'', $mountPoint);
             $cmd = new \OMV\System\Process($shellCmd);
+            $cmd->setQuiet(true);
             $cmd->execute($output);
-            $uuid = $output[0];
+            $uuid = trim($output[0] ?? '');
         }
         if (!is_uuid($uuid)) {
             throw new \OMV\Exception(sprintf(

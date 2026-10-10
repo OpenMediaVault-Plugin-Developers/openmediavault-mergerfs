@@ -1,12 +1,11 @@
-{%- set poolmount = salt['omv_conf.get']('conf.system.filesystem.mountpoint', pool.mntentref) %}
-{%- set mntDir = poolmount.dir %}
+{%- set mntDir = mntdir %}
 {%- set fsname = pool.name ~ ':' ~ pool.uuid %}
 {%- set options = [] %}
 {%- set _ = options.append('category.create=' ~ pool.createpolicy) %}
 {%- set _ = options.append('minfreespace=' ~ pool.minfreespace | string ~ pool.minfreespaceunit) %}
 {%- set _ = options.append('fsname=' ~ fsname) %}
 {%- for option in pool.options.split(',') %}
-{%- if not 'category.create=' in option %}
+{%- if option | trim and not 'category.create=' in option %}
 {%- set _ = options.append(option) %}
 {%- endif %}
 {%- endfor %}
@@ -15,18 +14,20 @@
 {%- set branchDirs = pool.paths.split(':') %}
 {%- for dir in branchDirs %}
 {%- if dir | length > 2 %}
-{%- set parent = salt['cmd.shell']('omv-findmnt "' ~ dir ~ '" | sort -u') %}
+{%- set parents = salt['cmd.run_stdout']('omv-findmnt ' ~ dir | quote, python_shell=False) %}
 {%- set _ = branches.append(dir) %}
-{%- if parent | length > 1 %}
+{%- for parent in parents.splitlines() %}
+{%- if parent | length > 1 and parent not in reqMnts %}
 {%- set _ = reqMnts.append(parent) %}
 {%- endif %}
+{%- endfor %}
 {%- endif %}
 {%- endfor -%}
 {%- set optline = 'branches=' ~ branches | join(':') ~ ',' ~ options | join(',') %}
 [Unit]
 Description = MergerFS mount for {{ pool.name }}
-After=network-fs.target zfs-mount.target
-RequiresMountsFor={{ reqMnts | join(' ') }}
+After=zfs-mount.target
+RequiresMountsFor={% for m in reqMnts %}"{{ m }}"{% if not loop.last %} {% endif %}{% endfor %}
 
 [Mount]
 What = {{ fsname }}

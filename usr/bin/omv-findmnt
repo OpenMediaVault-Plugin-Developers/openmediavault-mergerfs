@@ -11,7 +11,8 @@
 
 export LC_ALL=C.UTF-8
 
-mnts=""
+# Expand globs in the branch path, but do not split it on whitespace.
+IFS=''
 
 if [ -n "${1}" ]; then
   for dir in ${1}; do
@@ -26,13 +27,7 @@ if [ -n "${1}" ]; then
       if [ -z "${mnt}" ] || [ "${mnt}" = "/" ]; then
         continue
       fi
-      if [ -z "${mnts}" ]; then
-        mnts="${mnt}"
-      else
-        mnts="${mnts} ${mnt}"
-      fi
+      echo "${mnt}"
     fi
   done
-fi
-
-echo "${mnts}"
+fi | sort -u

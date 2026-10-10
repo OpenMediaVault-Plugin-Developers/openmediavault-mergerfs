@@ -36,46 +36,78 @@ remove_mergerfs_mount_files_{{ mountsdir }}:
 
 systemd_remove_dead_symlinks:
   cmd.run:
-    - name: find /etc/systemd/system/multi-user.target.wants -name "srv-mergerfs-*.mount" -xtype l -print -delete
+    - name: find "{{ symlinksdir }}" -name "{{ pooldiresc }}-*.mount" -xtype l -print -delete
 
-{% for pool in config.pools.pool %}
-{% if pool.mntentref | length == 36 %}
+{#- Collect the pools that have a valid mount point entry. #}
+{%- set pools = [] %}
+{%- for pool in config.pools.pool %}
+{%- if pool.mntentref | length == 36 %}
+{%- set poolmounts = salt['omv_conf.get_by_filter'](
+  'conf.system.filesystem.mountpoint',
+  {'operator': 'stringEquals', 'arg0': 'uuid', 'arg1': pool.mntentref}) %}
+{%- if poolmounts | length > 0 %}
+{%- set _ = pools.append({
+  'pool': pool,
+  'dir': poolmounts[0].dir,
+  'unit': salt['cmd.run']("systemd-escape --path --suffix=mount '" ~ poolmounts[0].dir ~ "'")
+}) %}
+{%- endif %}
+{%- endif %}
+{%- endfor %}
 
-{% set poolmount = salt['omv_conf.get']('conf.system.filesystem.mountpoint', pool.mntentref) -%}
-{% set pooldir = poolmount.dir %}
-{% set poolname = pool.name %}
-
-{% set unitname = salt['cmd.run']("systemd-escape --path --suffix=mount '" ~ pooldir ~ "'") %}
-{% set mountunit =  mountsdir ~ "/" ~ unitname %}
+{% for entry in pools %}
+{% set poolname = entry.pool.name %}
 
 configure_mergerfs_{{ poolname }}:
   file.managed:
-    - name: {{ mountunit }}
+    # Single quotes: YAML would turn the \x2d escapes into dashes otherwise.
+    - name: '{{ mountsdir }}/{{ entry.unit }}'
     - source:
       - salt://{{ tpldir }}/files/etc-systemd-system-mergerfs_mount.j2
     - context:
-        pool: {{ pool | json }}
+        pool: {{ entry.pool | json }}
+        mntdir: {{ entry.dir | json }}
     - template: jinja
     - user: root
     - group: root
     - mode: '0644'
 
-systemd-reload_{{ poolname }}:
+{% endfor %}
+
+# Always reload, also when the last pool was deleted and its unit removed.
+mergerfs_systemd_reload:
   cmd.run:
     - name: systemctl daemon-reload
 
+# Unmount pools that no longer exist in the configuration.
+unmount_deleted_mergerfs_pools:
+  cmd.run:
+    - name: |
+        findmnt -rn -t fuse.mergerfs -o TARGET | while read -r target; do
+          case "${target}" in
+            "{{ pooldir }}"/*) ;;
+            *) continue ;;
+          esac
+          case " {{ pools | map(attribute='dir') | join(' ') }} " in
+            *" ${target} "*) continue ;;
+          esac
+          umount "${target}" || echo "Failed to unmount deleted pool ${target}" >&2
+        done
+
+{% for entry in pools %}
+{% set poolname = entry.pool.name %}
+
 enable_{{ poolname }}_mergerfs:
   service.enabled:
-    - name: {{ unitname }}
+    - name: {{ entry.unit }}
     - enable: True
 
-{% if not salt['mount.is_mounted'](pooldir) %}
+{% if not salt['mount.is_mounted'](entry.dir) %}
 
 restart_{{ poolname }}_mergerfs:
   cmd.run:
-    - name: systemctl restart '{{ unitname }}'
+    - name: systemctl restart '{{ entry.unit }}'
 
 {% endif %}
 
-{% endif %}
 {% endfor %}
