@@ -1,3 +1,21 @@
+openmediavault-mergerfs (8.0.4) stable; urgency=low
+
+  * Validate pool parameters and reject branch paths containing shell or
+    systemd-unsafe characters; trim whitespace around paths
+  * Fix possible command injection through branch paths and dedup policy
+  * "Remove path": require the pool to be mounted, honour minimum free
+    space and shared filesystems in the space check, and restore the
+    branch if the migration fails
+  * Refuse to delete a pool that is used by a shared folder
+  * Unmount deleted pools and always reload systemd on deploy
+  * Skip broken pools instead of failing the filesystem list and deploy
+  * Support branch paths containing spaces
+  * Remove reference to non-existent network-fs.target from mount units
+  * Remove stale monit config when filesystem notifications are disabled
+  * Clean up mount entries, units and monit config on purge
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sat, 10 Oct 2026 15:37:29 +0000
+
 openmediavault-mergerfs (8.0.3) stable; urgency=low
 
   * Allow dashes and dots in pool names
