@@ -659,6 +659,25 @@ else
     _fail "get — stored paths wrong" "got: ${STORED_PATHS:0:200}"
 fi
 
+# Edit an existing pool the way the UI form does: it submits what get
+# returned (minus namero) with the empty multi-selects as null.
+EDIT_PARAMS=$(echo "$GET_RESULT" | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+d.pop('namero', None)
+d['sharedfolderrefs'] = None
+d['filesystems'] = None
+print(json.dumps(d))" 2>/dev/null || echo "{}")
+assert_rpc "set — edit existing pool with null multi-selects (UI form)" \
+    "Mergerfs" "set" "$EDIT_PARAMS" "\"uuid\":\"$POOL1_UUID\"" >/dev/null
+EDITED_PATHS=$(rpc "Mergerfs" "get" "{\"uuid\":\"$POOL1_UUID\"}" 2>/dev/null | python3 -c \
+    "import sys,json; print(json.load(sys.stdin).get('paths',''))" 2>/dev/null || echo "")
+if [ "$EDITED_PATHS" = "$STORED_PATHS" ]; then
+    _pass "set — paths unchanged after editing existing pool"
+else
+    _fail "set — paths changed by editing existing pool" "got: ${EDITED_PATHS:0:200}"
+fi
+
 # Three paths with a duplicate and padding: every path must survive intact
 # and in order (guards against the last entry being overwritten).
 ORDER_RESULT=$(rpc "Mergerfs" "set" "$(pool_params "mgtestorder" \
