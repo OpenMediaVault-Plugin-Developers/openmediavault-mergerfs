@@ -3,13 +3,17 @@
 # This file is distributed under the same license as the openmediavault-mergerfs package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
+# Translators:
+# Jonatan Nyberg, 2026
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: openmediavault-mergerfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-30 16:15+0000\n"
+"POT-Creation-Date: 2026-05-31 01:23+0000\n"
 "PO-Revision-Date: 2022-03-04 14:10+0000\n"
+"Last-Translator: Jonatan Nyberg, 2026\n"
 "Language-Team: Swedish (https://app.transifex.com/openmediavault-plugin-developers/teams/1854/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,172 +22,179 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Balance pool"
-msgstr ""
+msgstr "Balansera pool"
 
 msgid "Balance pool ..."
-msgstr ""
+msgstr "Balanserar pool…"
 
 msgid "Create"
-msgstr ""
+msgstr "Skapa"
 
 msgid "Create policy"
-msgstr ""
+msgstr "Skapandepolicy"
 
 msgid "Created pool."
-msgstr ""
+msgstr "Poolen har skapats."
 
 msgid "Dedup pool - largest (practice) ..."
-msgstr ""
+msgstr "Deduplicera pool – störst (simulering)…"
 
 msgid "Dedup pool - largest ..."
-msgstr ""
+msgstr "Deduplicera pool – störst…"
 
 msgid "Dedup pool - most free space (practice) ..."
-msgstr ""
+msgstr "Deduplicera pool – mest ledigt utrymme (simulering)…"
 
 msgid "Dedup pool - most free space ..."
-msgstr ""
+msgstr "Deduplicera pool – mest ledigt utrymme…"
 
 msgid "Dedup pool - newest (practice) ..."
-msgstr ""
+msgstr "Deduplicera pool – nyast (simulering)…"
 
 msgid "Dedup pool - newest ..."
-msgstr ""
+msgstr "Deduplicera pool – nyast…"
 
 msgid "Dedup pool - oldest (practice) ..."
-msgstr ""
+msgstr "Deduplicera pool – äldst (simulering)…"
 
 msgid "Dedup pool - oldest ..."
-msgstr ""
+msgstr "Deduplicera pool – äldst…"
 
 msgid "Dedup pool - smallest (practice) ..."
-msgstr ""
+msgstr "Deduplicera pool – minst (simulering)…"
 
 msgid "Dedup pool - smallest ..."
-msgstr ""
+msgstr "Deduplicera pool – minst…"
 
 msgid "Deduplicate"
-msgstr ""
+msgstr "Deduplicera"
 
 msgid "Delete"
-msgstr ""
+msgstr "Ta bort"
 
 msgid "Delete source files after successful copy"
-msgstr ""
+msgstr "Ta bort källfiler efter slutförd kopiering"
 
 msgid "Docs"
-msgstr ""
+msgstr "Dokumentation"
 
 msgid "Edit"
-msgstr ""
+msgstr "Redigera"
 
 msgid "Edit pool."
-msgstr ""
+msgstr "Redigera pool."
 
 msgid "Filesystems"
-msgstr ""
+msgstr "Filsystem"
 
 msgid "Largest"
-msgstr ""
+msgstr "Störst"
 
 msgid "Largest (practice)"
-msgstr ""
+msgstr "Störst (simulering)"
 
 msgid "Minimum free space"
-msgstr ""
+msgstr "Minsta lediga utrymme"
 
 msgid "Most free space"
-msgstr ""
+msgstr "Mest ledigt utrymme"
 
 msgid "Most free space (practice)"
-msgstr ""
+msgstr "Mest ledigt utrymme (simulering)"
 
 msgid "Name"
-msgstr ""
+msgstr "Namn"
 
 msgid "Newest"
-msgstr ""
+msgstr "Nyast"
 
 msgid "Newest (practice)"
-msgstr ""
+msgstr "Nyast (simulering)"
 
 msgid "Oldest"
-msgstr ""
+msgstr "Äldst"
 
 msgid "Oldest (practice)"
-msgstr ""
+msgstr "Äldst (simulering)"
 
 msgid "Optional. All filesystems will be converted to paths when saved."
-msgstr ""
+msgstr "Valfritt. Alla filsystem omvandlas till sökvägar när de sparas."
 
 msgid "Optional. All shared folders will be converted to paths when saved."
-msgstr ""
+msgstr "Valfritt. Alla delade mappar omvandlas till sökvägar när de sparas."
 
 msgid "Options"
-msgstr ""
+msgstr "Alternativ"
 
 msgid "Path"
-msgstr ""
+msgstr "Sökväg"
 
 msgid "Paths"
-msgstr ""
+msgstr "Sökvägar"
 
 msgid "Put each folder on a new line."
-msgstr ""
+msgstr "Ange varje mapp på en egen rad."
 
 msgid "Remove and migrate"
-msgstr ""
+msgstr "Ta bort och migrera"
 
 msgid "Remove path"
-msgstr ""
+msgstr "Ta bort sökväg"
 
 msgid "Remove path from pool ..."
-msgstr ""
+msgstr "Tar bort sökväg från pool…"
 
 msgid "Removing path and migrating data ..."
-msgstr ""
+msgstr "Tar bort sökväg och migrerar data…"
 
 msgid "Restart pool"
-msgstr ""
+msgstr "Starta om pool"
 
 msgid "Shared"
-msgstr ""
+msgstr "Delad"
 
 msgid "Shared folders"
-msgstr ""
+msgstr "Delade mappar"
 
 msgid "Smallest"
-msgstr ""
+msgstr "Minst"
 
 msgid "Smallest (practice)"
-msgstr ""
+msgstr "Minst (simulering)"
 
 msgid ""
 "The selected path is removed from the pool and its data is copied back into "
 "the pool, where mergerfs redistributes it across the remaining branches."
 msgstr ""
+"Den valda sökvägen tas bort från poolen och dess data kopieras tillbaka till"
+" poolen, där mergerfs fördelar om dem mellan de återstående grenarna."
 
 msgid "Unit"
-msgstr ""
+msgstr "Enhet"
 
 msgid "When editing a pool, a reboot may be necessary to apply changes."
 msgstr ""
+"När en pool redigeras kan en omstart krävas för att tillämpa ändringarna."
 
 msgid ""
 "When enabled, files are removed from the detached disk once they have been "
 "copied into the pool."
 msgstr ""
+"När detta är aktiverat tas filerna bort från den frånkopplade disken efter "
+"att de har kopierats till poolen."
 
 msgid ""
 "When the minimum free space is reached on a filesystem it will not be "
 "written to unless all the other filesystem also has reached the limit."
 msgstr ""
+"När ett filsystem når gränsen för minsta lediga utrymme skrivs inget mer "
+"till det, såvida inte även alla andra filsystem har nått gränsen."
 
 msgid "mergerfs"
-msgstr ""
+msgstr "mergerfs"
 
 msgid "mergerfs tools"
-msgstr ""
+msgstr "mergerfs-verktyg"
 
 msgid "omv-extras.org wiki"
-msgstr ""
+msgstr "omv-extras.org-wiki"
