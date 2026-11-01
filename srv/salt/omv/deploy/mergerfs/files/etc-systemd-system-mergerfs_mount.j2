@@ -26,7 +26,7 @@
 {%- set optline = 'branches=' ~ branches | join(':') ~ ',' ~ options | join(',') %}
 [Unit]
 Description = MergerFS mount for {{ pool.name }}
-After=zfs-mount.target
+After=zfs-mount.service
 RequiresMountsFor={% for m in reqMnts %}"{{ m }}"{% if not loop.last %} {% endif %}{% endfor %}
 
 [Mount]
