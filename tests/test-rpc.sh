@@ -778,6 +778,15 @@ if [ -f "$UNIT_FILE" ]; then
     else
         _pass "unit file — no reference to non-existent network-fs.target"
     fi
+    # zfs-mount.target does not exist; ordering must be on zfs-mount.service so
+    # pools on ZFS datasets without generated .mount units still mount after ZFS.
+    if grep -q 'zfs-mount.target' "$UNIT_FILE"; then
+        _fail "unit file — references non-existent zfs-mount.target"
+    elif grep -q '^After=zfs-mount.service$' "$UNIT_FILE"; then
+        _pass "unit file — ordered After=zfs-mount.service"
+    else
+        _fail "unit file — missing After=zfs-mount.service" "$(grep '^After=' "$UNIT_FILE")"
+    fi
     VERIFY_OUT=$(systemd-analyze verify --man=no "$UNIT_FILE" 2>&1 | grep -F "$UNIT_NAME" || true)
     if grep -qiE 'invalid|failed|ignoring' <<< "$VERIFY_OUT"; then
         _fail "unit file — systemd-analyze verify reports problems" "$(echo "$VERIFY_OUT" | head -3)"
